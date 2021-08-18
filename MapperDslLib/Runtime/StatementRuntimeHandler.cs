@@ -1,4 +1,4 @@
-﻿namespace MapperDslLib
+﻿namespace MapperDslLib.Runtime
 {
     internal class StatementRuntimeHandler<TOrigin, TTarget> : IStatementRuntimeHandler<TOrigin, TTarget>
     {

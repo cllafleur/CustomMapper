@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace MapperDslLib
+namespace MapperDslLib.Runtime
 {
     internal class FunctionSetRuntimeHandler<T> : ISetRuntimeHandler<T>
     {
-        private IInsertFunctionHandler insertFunctionHandler;
+        private IInsertFunctionHandler<T> insertFunctionHandler;
         private List<IGetRuntimeHandler<T>> arguments;
 
-        public FunctionSetRuntimeHandler(IInsertFunctionHandler insertFunctionHandler, List<IGetRuntimeHandler<T>> arguments)
+        public FunctionSetRuntimeHandler(IInsertFunctionHandler<T> insertFunctionHandler, List<IGetRuntimeHandler<T>> arguments)
         {
             this.insertFunctionHandler = insertFunctionHandler;
             this.arguments = arguments;

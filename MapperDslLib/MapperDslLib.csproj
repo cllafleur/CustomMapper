@@ -7,7 +7,9 @@
     <NoWarn>3021;1701;1702</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Antlr4 Include="Mapper.g4" />
+    <Antlr4 Include="Parser\Mapper.g4">
+      <Package>MapperDslLib.Parser</Package>
+    </Antlr4>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />

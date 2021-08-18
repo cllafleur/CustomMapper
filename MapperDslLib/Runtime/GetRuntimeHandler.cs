@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace MapperDslLib
+namespace MapperDslLib.Runtime
 {
     internal class GetRuntimeHandler<T> : IGetRuntimeHandler<T>
     {

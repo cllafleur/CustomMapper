@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MapperDslLib
+﻿namespace MapperDslLib.Parser
 {
+    using System.Collections.Generic;
+
     public class FunctionMapper : IExpressionMapper
     {
         public string Identifier { get; private set; }

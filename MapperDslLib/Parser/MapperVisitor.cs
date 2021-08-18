@@ -1,10 +1,8 @@
-﻿using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MapperDslLib
+﻿namespace MapperDslLib.Parser
 {
+    using Antlr4.Runtime.Misc;
+    using System.Collections.Generic;
+
     public class MapperVisitor : MapperBaseVisitor<object>
     {
         public override object VisitStatement([NotNull] MapperParser.StatementContext context)

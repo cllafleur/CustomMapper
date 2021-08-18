@@ -1,4 +1,4 @@
-﻿namespace MapperDslLib
+﻿namespace MapperDslLib.Parser
 {
     public class InstanceRefMapper : IExpressionMapper
     {

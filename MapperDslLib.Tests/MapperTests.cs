@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using MapperDslLib.Runtime;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,19 +45,19 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             public Dictionary<string, string> Properties { get; set; }
         }
 
-        class ExtractRef : IExtractFunctionHandler
+        class ExtractRef : IExtractFunctionHandler<OriginObject>
         {
-            public object GetObject(object instanceObj, params object[] args)
+            public object GetObject(OriginObject instanceObj, params object[] args)
             {
                 return $"{args[0]}__new";
             }
         }
 
-        class AddProperty : IInsertFunctionHandler
+        class AddProperty : IInsertFunctionHandler<TargetObject>
         {
-            public void SetObject(object instanceObject, object value, params object[] args)
+            public void SetObject(TargetObject instanceObject, object value, params object[] args)
             {
-                ((TargetObject)instanceObject).Properties.Add((string)args[0], (string)value);
+                instanceObject.Properties.Add((string)args[0], (string)value);
             }
         }
 
@@ -96,8 +97,8 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             memStream.Position = 0;
 
             var functionProvider = new FunctionHandlerProvider();
-            functionProvider.Register<IExtractFunctionHandler, ExtractRef>("ExtractRef");
-            functionProvider.Register<IInsertFunctionHandler, AddProperty>("AddProperty");
+            functionProvider.Register<IExtractFunctionHandler<OriginObject>, ExtractRef>("ExtractRef");
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddProperty>("AddProperty");
             var mapper = new Mapper(functionProvider, memStream);
             mapper.Load();
             var handler = mapper.GetMapper<OriginObject, TargetObject>();

@@ -1,4 +1,4 @@
-﻿namespace MapperDslLib
+﻿namespace MapperDslLib.Runtime
 {
     public interface IMapperHandler<TOrigin, TTarget>
     {

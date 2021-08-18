@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MapperDslLib
+namespace MapperDslLib.Runtime
 {
     internal class MapperHandler<TOrigin, TTarget> : IMapperHandler<TOrigin, TTarget>
     {

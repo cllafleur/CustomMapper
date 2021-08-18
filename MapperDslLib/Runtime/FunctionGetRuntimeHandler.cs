@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace MapperDslLib
+namespace MapperDslLib.Runtime
 {
     internal class FunctionGetRuntimeHandler<TOrigin> : IGetRuntimeHandler<TOrigin>
     {
-        private IExtractFunctionHandler functionHandler;
+        private IExtractFunctionHandler<TOrigin> functionHandler;
         private IEnumerable<IGetRuntimeHandler<TOrigin>> arguments;
 
-        public FunctionGetRuntimeHandler(IExtractFunctionHandler functionHandler, IEnumerable<IGetRuntimeHandler<TOrigin>> arguments)
+        public FunctionGetRuntimeHandler(IExtractFunctionHandler<TOrigin> functionHandler, IEnumerable<IGetRuntimeHandler<TOrigin>> arguments)
         {
             this.functionHandler = functionHandler;
             this.arguments = arguments;

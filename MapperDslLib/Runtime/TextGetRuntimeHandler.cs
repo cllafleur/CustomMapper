@@ -1,4 +1,4 @@
-﻿namespace MapperDslLib
+﻿namespace MapperDslLib.Runtime
 {
     internal class TextGetRuntimeHandler<TOrigin> : IGetRuntimeHandler<TOrigin>
     {

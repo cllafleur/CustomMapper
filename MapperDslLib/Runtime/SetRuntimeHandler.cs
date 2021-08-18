@@ -1,4 +1,4 @@
-﻿namespace MapperDslLib
+﻿namespace MapperDslLib.Runtime
 {
     internal class SetRuntimeHandler<T> : ISetRuntimeHandler<T>
     {
@@ -11,7 +11,7 @@
 
         public void SetValue(T obj, object value)
         {
-         instanceVisitor.SetInstance(obj, value);
+            instanceVisitor.SetInstance(obj, value);
         }
     }
 }

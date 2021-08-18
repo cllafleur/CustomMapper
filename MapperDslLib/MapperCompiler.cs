@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MapperDslLib.Parser;
+using MapperDslLib.Runtime;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -52,7 +54,7 @@ namespace MapperDslLib
             {
                 arguments.Add(BuildGetRuntimeHandler<T>(arg));
             }
-            return new FunctionGetRuntimeHandler<T>(_functionHandlerProvider.Get<IExtractFunctionHandler>(functionMapper.Identifier), arguments);
+            return new FunctionGetRuntimeHandler<T>(_functionHandlerProvider.Get<IExtractFunctionHandler<T>>(functionMapper.Identifier), arguments);
         }
 
         private InstanceVisitor<T> BuildInstanceVisitor<T>(InstanceRefMapper instanceRef)
@@ -80,7 +82,7 @@ namespace MapperDslLib
             {
                 arguments.Add(BuildGetRuntimeHandler<T>(arg));
             }
-            return new FunctionSetRuntimeHandler<T>(_functionHandlerProvider.Get<IInsertFunctionHandler>(functionMapper.Identifier), arguments);
+            return new FunctionSetRuntimeHandler<T>(_functionHandlerProvider.Get<IInsertFunctionHandler<T>>(functionMapper.Identifier), arguments);
         }
     }
 }
