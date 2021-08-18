@@ -64,13 +64,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
         [Test]
         public void Map_ScalarProperties_Success()
         {
-            using var memStream = new MemoryStream();
-            using var writer = new StreamWriter(memStream);
-            writer.Write(CASE1);
-            writer.Flush();
-            memStream.Position = 0;
-
-            var mapper = new Mapper(new FunctionHandlerProvider(), memStream);
+            var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(CASE1));
             mapper.Load();
             var handler = mapper.GetMapper<OriginObject, TargetObject>();
             var origin = new OriginObject()
@@ -90,16 +84,10 @@ ExtractRef(Description) -> AddProperty(""contractType"")
         [Test]
         public void Map_ScalarAndFunctionProperties_Success()
         {
-            using var memStream = new MemoryStream();
-            using var writer = new StreamWriter(memStream);
-            writer.Write(CASE2);
-            writer.Flush();
-            memStream.Position = 0;
-
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<OriginObject>, ExtractRef>("ExtractRef");
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddProperty>("AddProperty");
-            var mapper = new Mapper(functionProvider, memStream);
+            var mapper = new Mapper(functionProvider, new StringReader(CASE2));
             mapper.Load();
             var handler = mapper.GetMapper<OriginObject, TargetObject>();
             var origin = new OriginObject()

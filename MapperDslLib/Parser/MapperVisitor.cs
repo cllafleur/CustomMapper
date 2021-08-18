@@ -7,8 +7,13 @@
     {
         public override object VisitStatement([NotNull] MapperParser.StatementContext context)
         {
-            var originExpr = (IExpressionMapper)this.Visit(context.expr(0));
-            var targetExpr = (IExpressionMapper)this.Visit(context.expr(1));
+            var exprs = context.expr();
+            var originExpr = (IExpressionMapper)this.Visit(exprs[0]);
+            IExpressionMapper targetExpr = null;
+            if (exprs.Length > 1)
+            {
+                targetExpr = (IExpressionMapper)this.Visit(exprs[1]);
+            }
             return new StatementMapper(originExpr, targetExpr);
         }
 
@@ -32,9 +37,13 @@
         {
             if (context.LITTERAL() != null)
             {
-                return new TextMapper(context.LITTERAL().GetText());
+                return new TextMapper(context.LITTERAL().GetText().Replace("\"", ""));
             }
 
+            if (context.ChildCount == 0)
+            {
+                return null;
+            }
             return this.Visit(context.GetChild(0));
         }
 

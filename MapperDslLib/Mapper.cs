@@ -11,10 +11,10 @@ namespace MapperDslLib
 {
     public class Mapper : IDisposable
     {
-        private Stream _mappingDefinition;
+        private TextReader _mappingDefinition;
         private IFunctionHandlerProvider _functionHandlerProvider;
 
-        public Mapper(IFunctionHandlerProvider functionProvider, Stream mappingDefinition)
+        public Mapper(IFunctionHandlerProvider functionProvider, TextReader mappingDefinition)
         {
             _mappingDefinition = mappingDefinition;
             _functionHandlerProvider = functionProvider;
@@ -27,7 +27,7 @@ namespace MapperDslLib
 
         }
 
-        public void Load()
+        public (bool success, string[] errors) Load()
         {
             AntlrInputStream stream = new AntlrInputStream(_mappingDefinition);
             var lexer = new MapperLexer(stream);
@@ -37,9 +37,13 @@ namespace MapperDslLib
             var visitor = new MapperVisitor();
             var listener = new MapperListener(visitor);
 
+            var syntaxErrorListener = new SyntaxErrorListener();
+            parser.AddErrorListener(syntaxErrorListener);
+
             walker.Walk(listener, parser.file());
             var data = listener.Result;
             Actions = data;
+            return (parser.NumberOfSyntaxErrors == 0, syntaxErrorListener.GetErrors());
         }
 
         public IMapperHandler<TOrigin, TTarget> GetMapper<TOrigin, TTarget>()
