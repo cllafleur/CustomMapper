@@ -23,7 +23,7 @@ namespace MapperDslUI.Models
 
         public static TargetObject GetNewTargetObject()
         {
-            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            var target = new TargetObject() { Description = new DescriptionObject() };
             return target;
         }
     }

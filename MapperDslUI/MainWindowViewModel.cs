@@ -34,7 +34,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string originText;
+        private string originText = string.Empty;
 
         public string OriginText
         {
@@ -47,7 +47,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string targetText;
+        private string targetText = string.Empty;
 
         public string TargetText
         {
@@ -60,7 +60,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string mappingDefinition;
+        private string mappingDefinition = string.Empty;
 
         public string MappingDefinition
         {
@@ -73,7 +73,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string consoleOutput;
+        private string consoleOutput = string.Empty;
         private bool doingMapping;
 
         public string ConsoleOutput
@@ -137,21 +137,18 @@ ExtractRef(Description) -> AddProperty(""contractType"")
         private string SerializeObject<T>(T obj)
         {
             var result = JsonSerializer.Serialize(obj, new JsonSerializerOptions() { WriteIndented = true });
-            return result;
+            return result ?? string.Empty;
         }
 
         private T DeserializeObject<T>(string text)
+            where T : new()
         {
-            return JsonSerializer.Deserialize<T>(text);
+            return JsonSerializer.Deserialize<T>(text) ?? new T();
         }
 
         private string GetLogFromException(Exception exc)
         {
             string message = string.Empty;
-            if (exc == null)
-            {
-                return message;
-            }
             switch (exc)
             {
                 case MapperRuntimeException mapperExc:
@@ -161,8 +158,12 @@ ExtractRef(Description) -> AddProperty(""contractType"")
                     message = exc.Message;
                     break;
             }
-
-            return $"{GetLogFromException(exc.InnerException)}\r\n{message}";
+            string innerMessage = string.Empty;
+            if (exc.InnerException != null)
+            {
+                innerMessage = GetLogFromException(exc.InnerException);
+            }
+            return $"{innerMessage}\r\n{message}";
         }
 
         private void AppendToConsoleOutput(string text)
