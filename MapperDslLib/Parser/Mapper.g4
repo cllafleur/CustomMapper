@@ -21,7 +21,7 @@ instanceRef
 	;
 
 ASSIGNMENT
-	: '->'
+	: ('-' | '=') '>'
 	;
 
 DOT

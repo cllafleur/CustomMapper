@@ -1,6 +1,6 @@
 ﻿namespace MapperDslLib.Parser
 {
-    public interface IExpressionMapper
+    public interface IExpressionMapper : IPartSourceProvider
     {
     }
 }

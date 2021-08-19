@@ -118,6 +118,11 @@ ExtractRef(Description) -> AddProperty(""contractType"")
                 var target = ModelBuilder.GetNewTargetObject();
                 mapperHandler.Map(origin, target);
                 TargetText = SerializeObject(target);
+                AppendToConsoleOutput(string.Empty);
+            }
+            catch (MapperRuntimeException ex)
+            {
+                AppendToConsoleOutput(GetLogFromException(ex));
             }
             catch (Exception ex)
             {
@@ -140,9 +145,29 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             return JsonSerializer.Deserialize<T>(text);
         }
 
+        private string GetLogFromException(Exception exc)
+        {
+            string message = string.Empty;
+            if (exc == null)
+            {
+                return message;
+            }
+            switch (exc)
+            {
+                case MapperRuntimeException mapperExc:
+                    message = $"Line: {mapperExc.ParsingInfo.Line} {mapperExc.ParsingInfo.Text} {exc.Message}";
+                    break;
+                default:
+                    message = exc.Message;
+                    break;
+            }
+
+            return $"{GetLogFromException(exc.InnerException)}\r\n{message}";
+        }
+
         private void AppendToConsoleOutput(string text)
         {
-            ConsoleOutput = $"{ConsoleOutput}{text}\r\n";
+            ConsoleOutput = $"{text}\r\n";
         }
 
         class ExtractRef : IExtractFunctionHandler<OriginObject>

@@ -45,6 +45,10 @@ namespace MapperDslLib.Runtime
             foreach (var identifier in this.value.Split('.'))
             {
                 var property = currentType.GetProperty(identifier);
+                if (property == null)
+                {
+                    throw new MapperVisitException($"Property '{identifier}' not found");
+                }
                 navigation.Add(property);
                 currentType = property.PropertyType;
             }

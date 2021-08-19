@@ -29,7 +29,7 @@ namespace MapperDslLib
         {
             var getRuntimeHandler = BuildGetRuntimeHandler<TOrigin>(statement.OriginExpr);
             var setRuntimeHandler = BuildSetRuntimeHandler<TTarget>(statement.TargetExpr);
-            return new StatementRuntimeHandler<TOrigin, TTarget>(getRuntimeHandler, setRuntimeHandler);
+            return new StatementRuntimeHandler<TOrigin, TTarget>(getRuntimeHandler, setRuntimeHandler, statement.ParsingInfo);
         }
 
         private IGetRuntimeHandler<T> BuildGetRuntimeHandler<T>(IExpressionMapper expression)
@@ -38,9 +38,9 @@ namespace MapperDslLib
             {
                 case InstanceRefMapper instanceRef:
                     var instanceVisitor = BuildInstanceVisitor<T>(instanceRef);
-                    return new GetRuntimeHandler<T>(instanceVisitor);
+                    return new GetRuntimeHandler<T>(instanceVisitor, instanceRef.ParsingInfo);
                 case TextMapper textMapper:
-                    return new TextGetRuntimeHandler<T>(textMapper.Value);
+                    return new TextGetRuntimeHandler<T>(textMapper.Value, textMapper.ParsingInfo);
                 case FunctionMapper function:
                     return BuildFunctionGetRuntimeHandler<T>(function);
             }
@@ -54,12 +54,25 @@ namespace MapperDslLib
             {
                 arguments.Add(BuildGetRuntimeHandler<T>(arg));
             }
-            return new FunctionGetRuntimeHandler<T>(_functionHandlerProvider.Get<IExtractFunctionHandler<T>>(functionMapper.Identifier), arguments);
+
+            IExtractFunctionHandler<T> functionHandler = _functionHandlerProvider.Get<IExtractFunctionHandler<T>>(functionMapper.Identifier);
+            if (functionHandler == null)
+            {
+                throw new MapperRuntimeException("Function identifier not found", functionMapper.ParsingInfo);
+            }
+            return new FunctionGetRuntimeHandler<T>(functionHandler, arguments, functionMapper.ParsingInfo);
         }
 
         private InstanceVisitor<T> BuildInstanceVisitor<T>(InstanceRefMapper instanceRef)
         {
-            return new InstanceVisitor<T>(instanceRef.Value);
+            try
+            {
+                return new InstanceVisitor<T>(instanceRef.Value);
+            }
+            catch (Exception exc)
+            {
+                throw new MapperRuntimeException(exc.Message, instanceRef.ParsingInfo, exc);
+            }
         }
 
         private ISetRuntimeHandler<T> BuildSetRuntimeHandler<T>(IExpressionMapper expression)
@@ -68,7 +81,7 @@ namespace MapperDslLib
             {
                 case InstanceRefMapper instanceRef:
                     var instanceVisitor = BuildInstanceVisitor<T>(instanceRef);
-                    return new SetRuntimeHandler<T>(instanceVisitor);
+                    return new SetRuntimeHandler<T>(instanceVisitor, instanceRef.ParsingInfo);
                 case FunctionMapper function:
                     return BuildFunctionSetRuntimeHandler<T>(function);
             }
@@ -82,7 +95,13 @@ namespace MapperDslLib
             {
                 arguments.Add(BuildGetRuntimeHandler<T>(arg));
             }
-            return new FunctionSetRuntimeHandler<T>(_functionHandlerProvider.Get<IInsertFunctionHandler<T>>(functionMapper.Identifier), arguments);
+
+            IInsertFunctionHandler<T> insertFunctionHandler = _functionHandlerProvider.Get<IInsertFunctionHandler<T>>(functionMapper.Identifier);
+            if (insertFunctionHandler == null)
+            {
+                throw new MapperRuntimeException("Function identifier not found", functionMapper.ParsingInfo);
+            }
+            return new FunctionSetRuntimeHandler<T>(insertFunctionHandler, arguments, functionMapper.ParsingInfo);
         }
     }
 }

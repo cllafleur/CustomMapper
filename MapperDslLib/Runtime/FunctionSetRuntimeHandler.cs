@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MapperDslLib.Parser;
+using System;
+using System.Collections.Generic;
 
 namespace MapperDslLib.Runtime
 {
@@ -6,21 +8,37 @@ namespace MapperDslLib.Runtime
     {
         private IInsertFunctionHandler<T> insertFunctionHandler;
         private List<IGetRuntimeHandler<T>> arguments;
+        private ParsingInfo parsingInfos;
 
-        public FunctionSetRuntimeHandler(IInsertFunctionHandler<T> insertFunctionHandler, List<IGetRuntimeHandler<T>> arguments)
+        public FunctionSetRuntimeHandler(IInsertFunctionHandler<T> insertFunctionHandler, List<IGetRuntimeHandler<T>> arguments, Parser.ParsingInfo parsingInfo)
         {
             this.insertFunctionHandler = insertFunctionHandler;
             this.arguments = arguments;
+            this.parsingInfos = parsingInfo;
         }
 
         public void SetValue(T obj, object value)
         {
             List<object> parameters = new List<object>();
-            foreach (var arg in arguments)
+            try
             {
-                parameters.Add(arg.Get(obj));
+                foreach (var arg in arguments)
+                {
+                    parameters.Add(arg.Get(obj));
+                }
             }
-            insertFunctionHandler.SetObject(obj, value, parameters.ToArray());
+            catch (Exception exc)
+            {
+                throw new MapperRuntimeException("Failed to get parameters", parsingInfos, exc);
+            }
+            try
+            {
+                insertFunctionHandler.SetObject(obj, value, parameters.ToArray());
+            }
+            catch (Exception exc)
+            {
+                throw new MapperRuntimeException("Failed to call function", parsingInfos, exc);
+            }
         }
     }
 }

@@ -14,7 +14,7 @@
             {
                 targetExpr = (IExpressionMapper)this.Visit(exprs[1]);
             }
-            return new StatementMapper(originExpr, targetExpr);
+            return new StatementMapper(originExpr, targetExpr, new ParsingInfo(context.Start.Line, context.GetText()));
         }
 
         public override object VisitFunction([NotNull] MapperParser.FunctionContext context)
@@ -30,14 +30,14 @@
                     arguments.Add(expression);
                 }
             }
-            return new FunctionMapper(identifier, arguments);
+            return new FunctionMapper(identifier, arguments, new ParsingInfo(context.Start.Line, context.GetText()));
         }
 
         public override object VisitExpr([NotNull] MapperParser.ExprContext context)
         {
             if (context.LITTERAL() != null)
             {
-                return new TextMapper(context.LITTERAL().GetText().Replace("\"", ""));
+                return new TextMapper(context.LITTERAL().GetText().Replace("\"", ""), new ParsingInfo(context.Start.Line, context.GetText()));
             }
 
             if (context.ChildCount == 0)
@@ -49,7 +49,7 @@
 
         public override object VisitInstanceRef([NotNull] MapperParser.InstanceRefContext context)
         {
-            return new InstanceRefMapper(context.GetText());
+            return new InstanceRefMapper(context.GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
         }
     }
 }

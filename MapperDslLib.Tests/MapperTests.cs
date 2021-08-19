@@ -102,7 +102,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             Assert.AreEqual(origin.Title, target.Description.Title);
             Assert.AreEqual(origin.ModificationDate, target.ModificationDate);
             Assert.AreEqual(origin.Description, target.Description.Description);
-            Assert.That(target.Properties, Contains.Key("\"contractType\"").WithValue("superdescription__new"));
+            Assert.That(target.Properties, Contains.Key("contractType").WithValue("superdescription__new"));
         }
 
     }

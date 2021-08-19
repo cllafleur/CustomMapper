@@ -4,7 +4,7 @@
     {
         private string value;
 
-        public TextGetRuntimeHandler(string value)
+        public TextGetRuntimeHandler(string value, Parser.ParsingInfo parsingInfo)
         {
             this.value = value;
         }

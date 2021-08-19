@@ -8,10 +8,13 @@
 
         public IEnumerable<IExpressionMapper> Arguments { get; private set; }
 
-        public FunctionMapper(string identifier, IEnumerable<IExpressionMapper> arguments)
+        public ParsingInfo ParsingInfo { get; }
+
+        public FunctionMapper(string identifier, IEnumerable<IExpressionMapper> arguments, ParsingInfo infos)
         {
             Identifier = identifier;
             Arguments = arguments;
+            ParsingInfo = infos;
         }
     }
 }

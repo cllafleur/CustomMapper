@@ -39,7 +39,7 @@ namespace MapperDslLib
 
             var syntaxErrorListener = new SyntaxErrorListener();
             parser.AddErrorListener(syntaxErrorListener);
-
+            
             walker.Walk(listener, parser.file());
             var data = listener.Result;
             Actions = data;
