@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:local="clr-namespace:MapperDslUI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
@@ -11,6 +12,13 @@
             <Style TargetType="{x:Type TextBox}" >
                 <Setter Property="AcceptsReturn" Value="True"/>
                 <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="FontFamily" Value="Cascadia Code"/>
+                <Setter Property="FontSize" Value="9pt"/>
+            </Style>
+            <Style TargetType="{x:Type avalonEdit:TextEditor}">
+                <Setter Property="FontFamily" Value="Cascadia Code"/>
+                <Setter Property="FontSize" Value="9pt"/>
+                <Setter Property="SyntaxHighlighting" Value="Json"/>
             </Style>
         </Grid.Resources>
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="3" Margin="5">
@@ -24,13 +32,12 @@
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBox Name="OriginModel" Grid.Row="0" Grid.Column="0" Margin="5" TextWrapping="Wrap" Text="{Binding OriginText,UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Name="TargetModel" Grid.Row="0" Grid.Column="2" Margin="5" TextWrapping="Wrap" Text="{Binding TargetText,UpdateSourceTrigger=PropertyChanged}"/>
+            <avalonEdit:TextEditor Name="OriginModel" Grid.Row="0" Grid.Column="0" Margin="5" Document="{Binding OriginText,UpdateSourceTrigger=PropertyChanged}"  />
+            <avalonEdit:TextEditor Name="TargetModel" Grid.Row="0" Grid.Column="2" Margin="5" Document="{Binding TargetText,UpdateSourceTrigger=PropertyChanged}" />
             <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" />
             <GridSplitter Grid.Column="1" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
             <TextBox Name="MappingDefinition" Grid.Row="2" Grid.Column="0" Margin="5" TextWrapping="Wrap" Text="{Binding MappingDefinition,UpdateSourceTrigger=PropertyChanged}" />
             <TextBox Name="ConsoleOutput" Grid.Row="2" Grid.Column="2" Margin="5" TextWrapping="Wrap" Text="{Binding ConsoleOutput}" IsReadOnly="True" TextChanged="ConsoleOutput_TextChanged"/>
         </Grid>
-
     </Grid>
 </Window>

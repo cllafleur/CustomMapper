@@ -1,4 +1,6 @@
-﻿using MapperDslLib;
+﻿using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
+using MapperDslLib;
 using MapperDslLib.Runtime;
 using MapperDslUI.Models;
 using MapperDslUI.Models.Origin;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace MapperDslUI
@@ -34,9 +37,11 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string originText = string.Empty;
+        public IHighlightingDefinition SyntaxHighlight => HighlightingManager.Instance.GetDefinition("Json");
 
-        public string OriginText
+        private TextDocument originText = new TextDocument();
+
+        public TextDocument OriginText
         {
             get { return originText; }
             set
@@ -47,9 +52,9 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string targetText = string.Empty;
+        private TextDocument targetText = new TextDocument();
 
-        public string TargetText
+        public TextDocument TargetText
         {
             get { return targetText; }
             set
@@ -88,10 +93,17 @@ ExtractRef(Description) -> AddProperty(""contractType"")
 
         public MainWindowViewModel()
         {
-            TargetText = SerializeObject(ModelBuilder.GetNewTargetObject());
-            OriginText = SerializeObject(ModelBuilder.GetNewOriginObject());
+            TargetText.Text = SerializeObject(ModelBuilder.GetNewTargetObject());
+            OriginText.Text = SerializeObject(ModelBuilder.GetNewOriginObject());
             MappingDefinition = DEFAULT_DEFINITION;
             ConsoleOutput = string.Empty;
+            TargetText.TextChanged += Text_TextChanged;
+            OriginText.TextChanged += Text_TextChanged;
+        }
+
+        private void Text_TextChanged(object? sender, EventArgs e)
+        {
+            DoMap();
         }
 
         private void DoMap()
@@ -106,7 +118,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
                 var functionProvider = new FunctionHandlerProvider();
                 functionProvider.Register<IExtractFunctionHandler<OriginObject>, ExtractRef>("ExtractRef");
                 functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddProperty>("AddProperty");
-                var origin = DeserializeObject<OriginObject>(OriginText);
+                var origin = DeserializeObject<OriginObject>(OriginText.Text);
                 var mapper = new Mapper(functionProvider, new StringReader(MappingDefinition));
                 var (success, errors) = mapper.Load();
                 if (!success)
@@ -117,7 +129,7 @@ ExtractRef(Description) -> AddProperty(""contractType"")
                 var mapperHandler = mapper.GetMapper<OriginObject, TargetObject>();
                 var target = ModelBuilder.GetNewTargetObject();
                 mapperHandler.Map(origin, target);
-                TargetText = SerializeObject(target);
+                TargetText.Text = SerializeObject(target);
                 AppendToConsoleOutput(string.Empty);
             }
             catch (MapperRuntimeException ex)
