@@ -1,0 +1,271 @@
+﻿{
+  "reference": "BU18I065-1915",
+  "generalInformationCustomFields": {
+    "customCodeTable1": {
+      "id": "_TS_e0e8e00c-59d8-4e56-82c4-4a7de3512352",
+      "label": "Diversité, handicap, FDJ donne sa chance à tous - MissionhandicapFDJ@lfdj.com"
+    },
+    "customCodeTable2": null,
+    "customCodeTable3": null,
+    "date1": null,
+    "date2": null,
+    "date3": null,
+    "longText1": null,
+    "longText2": null,
+    "longText3": null,
+    "shortText1": "BU18I065",
+    "shortText2": null,
+    "shortText3": null,
+    "longText1HTML": null,
+    "longText2HTML": null,
+    "longText3HTML": null
+  },
+  "customBlock1CustomFields": {
+    "customCodeTable1": null,
+    "customCodeTable2": null,
+    "customCodeTable3": null,
+    "date1": null,
+    "date2": null,
+    "date3": null,
+    "longText1": null,
+    "longText2": null,
+    "longText3": null,
+    "shortText1": null,
+    "shortText2": null,
+    "shortText3": null,
+    "longText1HTML": null,
+    "longText2HTML": null,
+    "longText3HTML": null
+  },
+  "customBlock2CustomFields": {
+    "customCodeTable1": null,
+    "customCodeTable2": null,
+    "customCodeTable3": null,
+    "date1": null,
+    "date2": null,
+    "date3": null,
+    "longText1": null,
+    "longText2": null,
+    "longText3": null,
+    "shortText1": null,
+    "shortText2": null,
+    "shortText3": null,
+    "longText1HTML": null,
+    "longText2HTML": null,
+    "longText3HTML": null
+  },
+  "customBlock3CustomFields": {
+    "customCodeTable1": null,
+    "customCodeTable2": null,
+    "customCodeTable3": null,
+    "date1": null,
+    "date2": null,
+    "date3": null,
+    "longText1": null,
+    "longText2": null,
+    "longText3": null,
+    "shortText1": null,
+    "shortText2": null,
+    "shortText3": null,
+    "longText1HTML": null,
+    "longText2HTML": null,
+    "longText3HTML": null
+  },
+  "customBlock4CustomFields": {
+    "customCodeTable1": null,
+    "customCodeTable2": null,
+    "customCodeTable3": null,
+    "date1": null,
+    "date2": null,
+    "date3": null,
+    "longText1": null,
+    "longText2": null,
+    "longText3": null,
+    "shortText1": null,
+    "shortText2": null,
+    "shortText3": null,
+    "longText1HTML": null,
+    "longText2HTML": null,
+    "longText3HTML": null
+  },
+  "status": {
+    "id": "_TS_CO_OfferStatus_Diffuse",
+    "label": "Diffusée"
+  },
+  "languageId": 1036,
+  "vacancyCategory": {
+    "id": "_TS_CO_OfferCategory_Standard",
+    "label": "Standard"
+  },
+  "vacancyView": {
+    "id": "FF_FormViewSet_Offer_Default",
+    "label": "Vues sur offre par défaut"
+  },
+  "candidateView": {
+    "id": "FF_FormViewSet_Applicant_Default",
+    "label": "Vues sur candidat par défaut"
+  },
+  "organisation": {
+    "id": "142",
+    "label": "Boulogne"
+  },
+  "candidateRedirectionUrl": null,
+  "creationDate": "2018-06-20T10:44:35.807",
+  "modificationDate": "2021-08-19T00:00:31.787",
+  "requestingParty": {
+    "EEO": null,
+    "requestingPartyCustomFields": {
+      "customCodeTable1": null,
+      "customCodeTable2": null,
+      "customCodeTable3": null,
+      "date1": null,
+      "date2": null,
+      "date3": null,
+      "longText1": null,
+      "longText2": null,
+      "longText3": null,
+      "shortText1": null,
+      "shortText2": null,
+      "shortText3": null,
+      "longText1HTML": null,
+      "longText2HTML": null,
+      "longText3HTML": null
+    },
+    "recruitingReason": {
+      "id": "_TS_7609b62e-0c50-44f9-84ba-b1780ee3ec7e",
+      "label": "CDI Remplacement"
+    },
+    "numberOfVacancies": null,
+    "beginningDate": "2018-09-03T00:00:00",
+    "lineManager": {
+      "email": "17BA0864A788480780D9CD721ABD59D0@ts.com",
+      "uri": null,
+      "id": null,
+      "label": "D39CCDEA86244A0386DC6729D680C4C7 57151CAFC9144336A3AD70917533DE29"
+    },
+    "commentForAgency": null
+  },
+  "location": {
+    "locationCustomFields": {
+      "customCodeTable1": null,
+      "customCodeTable2": null,
+      "customCodeTable3": null,
+      "date1": null,
+      "date2": null,
+      "date3": null,
+      "longText1": null,
+      "longText2": null,
+      "longText3": null,
+      "shortText1": null,
+      "shortText2": null,
+      "shortText3": null,
+      "longText1HTML": null,
+      "longText2HTML": null,
+      "longText3HTML": null
+    },
+    "address": null,
+    "latitude": null,
+    "longitude": null
+  },
+  "criteria": {
+    "criteriaCustomFields": {
+      "customCodeTable1": null,
+      "customCodeTable2": {
+        "id": "_TS_BOOLEEN_NON",
+        "label": "Non"
+      },
+      "customCodeTable3": {
+        "id": "_TS_BOOLEEN_NON",
+        "label": "Non"
+      },
+      "date1": null,
+      "date2": null,
+      "date3": null,
+      "longText1": "Un poste à pourvoir en CDI sur le site de Boulogne-Billancourt.",
+      "longText2": null,
+      "longText3": null,
+      "shortText1": null,
+      "shortText2": null,
+      "shortText3": null,
+      "longText1HTML": "<p>Un poste &#224; pourvoir en CDI sur le site de Boulogne-Billancourt.</p>",
+      "longText2HTML": null,
+      "longText3HTML": null
+    },
+    "freeCriteria1": null,
+    "freeCriteria2": null,
+    "freeCriteria1HTML": null,
+    "freeCriteria2HTML": null,
+    "diploma": null,
+    "educationLevel": {
+      "id": "RECRUT_BAC+4_5",
+      "label": "Bac+4/5"
+    },
+    "experienceLevel": null,
+    "specialisations": [],
+    "skills": []
+  },
+  "jobDescription": {
+    "jobTitle": "Coach Agile et Cycle en V H/F",
+    "jobDescriptionCustomFields": {
+      "customCodeTable1": {
+        "id": "_TS_937032BE-22E2-410F-BE57-3F6D64A89F09",
+        "label": "Boulogne-Billancourt (92)"
+      },
+      "customCodeTable2": {
+        "id": "Coef 2C",
+        "label": "3916"
+      },
+      "customCodeTable3": null,
+      "date1": null,
+      "date2": null,
+      "date3": null,
+      "longText1": "1",
+      "longText2": null,
+      "longText3": "Le marché des jeux du hasard est en pleine mutation de par la digitalisation des modes de consommation des jeux en ligne et paris sportifs. Les clients ainsi que les nouveaux profils de joueur exigent davantage de services personnalisés. \r\n\r\nDans un marché de plus en plus concurrentiel, la DSI doit devenir un partenaire privilégié des métiers afin d'augmenter la capacité à innover et mettre rapidement sur le marché de nouveaux produits. \r\n\r\nLa FDJ ambitionne de garder son leadership en proposant une stratégie orientée service. Cela implique une profonde transformation de la DSI pour moderniser et digitaliser son parc applicatif et ses pratiques tout en garantissant un niveau de service conforme aux attentes de ses clients.\r\n\r\nUne transformation organisationnelle en continue de la DSI ainsi que l'évolution de son mode de gouvernance pour plus d'agilité sont cœurs des enjeux de la FDJ.",
+      "shortText1": "Coach Agile et Méthodes",
+      "shortText2": null,
+      "shortText3": null,
+      "longText1HTML": "<p>1</p>",
+      "longText2HTML": null,
+      "longText3HTML": "<p>Le march&#233; des jeux du hasard est en pleine mutation de par la digitalisation des modes de consommation des jeux en ligne et paris sportifs. Les clients ainsi que les nouveaux profils de joueur exigent davantage de services personnalis&#233;s. <br /><br />Dans un march&#233; de plus en plus concurrentiel, la DSI doit devenir un partenaire privil&#233;gi&#233; des m&#233;tiers afin d&#39;augmenter la capacit&#233; &#224; innover et mettre rapidement sur le march&#233; de nouveaux produits. <br /><br />La FDJ ambitionne de garder son leadership en proposant une strat&#233;gie orient&#233;e service. Cela implique une profonde transformation de la DSI pour moderniser et digitaliser son parc applicatif et ses pratiques tout en garantissant un niveau de service conforme aux attentes de ses clients.<br /><br />Une transformation organisationnelle en continue de la DSI ainsi que l&#39;&#233;volution de son mode de gouvernance pour plus d&#39;agilit&#233; sont cœurs des enjeux de la FDJ.</p>"
+    },
+    "description1": "Rattaché à l'entité Gouvernance et Qualité SI, vos missions consiste à :\r\n\r\n• Accompagner et coacher les acteurs projets tout au long du cycle de mise en œuvre de leurs projets (Agile et cycle en V).\r\n• Aider nos équipes à travailler de façon autonome et à s'améliorer constamment.\r\n• Mettre en place et être le garant de la bonne application de Scrum et de la méthode cycle en V\r\n• Aider les équipes à identifier les obstacles et à définir les plans d'actions pour les lever\r\n• Animer des sessions de formation.\r\n• Animer la pérennisation de la démarche des référentiels méthodologiques (processus et méthodes)\r\n• Animer l'amélioration continue des référentiels méthodologiques\r\n• Construire les cadres de références futurs\r\n• Contribuer au développement de l'offre de service Agile et cycle en V\r\n• Etre acteur de la transformation en contribuant à la conduite du changement.",
+    "description1HTML": "<p>Rattach&#233; &#224; l&#39;entit&#233; Gouvernance et Qualit&#233; SI, vos missions consiste &#224; :<br /><br />• Accompagner et coacher les acteurs projets tout au long du cycle de mise en œuvre de leurs projets (Agile et cycle en V).<br />• Aider nos &#233;quipes &#224; travailler de fa&#231;on autonome et &#224; s&#39;am&#233;liorer constamment.<br />• Mettre en place et &#234;tre le garant de la bonne application de Scrum et de la m&#233;thode cycle en V<br />• Aider les &#233;quipes &#224; identifier les obstacles et &#224; d&#233;finir les plans d&#39;actions pour les lever<br />• Animer des sessions de formation.<br />• Animer la p&#233;rennisation de la d&#233;marche des r&#233;f&#233;rentiels m&#233;thodologiques (processus et m&#233;thodes)<br />• Animer l&#39;am&#233;lioration continue des r&#233;f&#233;rentiels m&#233;thodologiques<br />• Construire les cadres de r&#233;f&#233;rences futurs<br />• Contribuer au d&#233;veloppement de l&#39;offre de service Agile et cycle en V<br />• Etre acteur de la transformation en contribuant &#224; la conduite du changement.</p>",
+    "description2": "De formation BAC +5 en informatique, vous justifiez d'une expérience réussie de 6 ans minimum dans le pilotage de projets et la conduite du changement. \r\n\r\nVous maîtrisez les best practices de la gestion de projet en méthodologie Agile et cycle en V (Scrum, Kanban ...).\r\nVous possédez d'excellentes qualités relationnelles, vous appréciez le travail en équipe et le contact avec les équipes. Votre sens du service et votre rigueur sont vos qualités principales. Votre niveau d'anglais est opérationnel.\r\nVous avez de très bonnes qualités orales et rédactionnelles.\r\nUne certification en gestion de projet (PMP, Prince 2, Scrum, Safe) serait fortement appréciée.\r\n\r\nEn rejoignant la Française des jeux, nous vous proposons de :\r\n•\tDévelopper vos connaissances et d'acquérir de nouvelles compétences techniques et méthodologiques\r\n\r\nPour vivre et construire l'aventure de la française des jeux à nos côtés, postulez donc sans plus attendre !",
+    "description2HTML": "<p>De formation BAC +5 en informatique, vous justifiez d&#39;une exp&#233;rience r&#233;ussie de 6 ans minimum dans le pilotage de projets et la conduite du changement. <br /><br />Vous ma&#238;trisez les best practices de la gestion de projet en m&#233;thodologie Agile et cycle en V (Scrum, Kanban ...).<br />Vous poss&#233;dez d&#39;excellentes qualit&#233;s relationnelles, vous appr&#233;ciez le travail en &#233;quipe et le contact avec les &#233;quipes. Votre sens du service et votre rigueur sont vos qualit&#233;s principales. Votre niveau d&#39;anglais est op&#233;rationnel.<br />Vous avez de tr&#232;s bonnes qualit&#233;s orales et r&#233;dactionnelles.<br />Une certification en gestion de projet (PMP, Prince 2, Scrum, Safe) serait fortement appr&#233;ci&#233;e.<br /><br />En rejoignant la Fran&#231;aise des jeux, nous vous proposons de :<br />•\tD&#233;velopper vos connaissances et d&#39;acqu&#233;rir de nouvelles comp&#233;tences techniques et m&#233;thodologiques<br /><br />Pour vivre et construire l&#39;aventure de la fran&#231;aise des jeux &#224; nos c&#244;t&#233;s, postulez donc sans plus attendre !</p>",
+    "jobTime": null,
+    "salaryRange": null,
+    "contractType": {
+      "id": "CT-CDI",
+      "label": "CDI"
+    },
+    "contractLength": null,
+    "primaryProfile": null,
+    "secondaryProfiles": [],
+    "country": {
+      "id": "_TS_CO_Country_France",
+      "label": "France"
+    },
+    "professionalCategory": null
+  },
+  "languages": [
+    {
+      "language": {
+        "id": "78674C1D-FA1A-4FB1-B571-80441B729B07",
+        "label": "Anglais"
+      },
+      "languageLevel": {
+        "id": "4B2C7096-3ADD-41A3-BF82-01ED61D6948C",
+        "label": "Courant"
+      }
+    }
+  ],
+  "referral": {
+    "bonusAmount": null,
+    "currency": null,
+    "bonusType": null
+  },
+  "publishedOnIntranet": false,
+  "publishedOnInternet": true,
+  "coverUrl": "http://quallfdj-rh.talent-soft.com/api/v1/vacancies/BU18I065-1915/cover"
+}

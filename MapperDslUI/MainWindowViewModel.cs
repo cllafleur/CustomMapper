@@ -5,13 +5,18 @@ using MapperDslLib.Runtime;
 using MapperDslUI.Models;
 using MapperDslUI.Models.Origin;
 using MapperDslUI.Models.Target;
+using MapperDslUI.Models.Target.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -21,11 +26,20 @@ namespace MapperDslUI
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private const string DEFAULT_DEFINITION = @"
-Title -> Description.Title
-Description -> Description.Description
-ModificationDate -> ModificationDate
-ExtractRef(Description) -> AddProperty(""contractType"")
-            ";
+GenerateId(Reference) -> Reference
+Reference -> AddProperty(""OfferReference"")
+JobDescription.JobTitle -> JobAdDetails.Title
+JobDescription.Description1 -> JobAdDetails.MissionDescription
+JobDescription.Description2 -> JobAdDetails.ProfileDescription
+Organisation -> AddProperty(""Organisation"")
+JobDescription.Country -> AddProperty(""Country"")
+JobDescription.JobDescriptionCustomFields.CustomCodeTable1.Label -> Location.Address
+""42.90"" -> Location.Coordinates.Longitude
+""-44.967"" -> Location.Coordinates.Latitude
+JobDescription.ContractType -> AddProperty(""ContractType"")
+Criteria.CriteriaCustomFields.LongText1 -> AddProperty(""InternalInformations"") # c'est un commentaire !
+ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
+";
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -36,8 +50,6 @@ ExtractRef(Description) -> AddProperty(""contractType"")
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
-        public IHighlightingDefinition SyntaxHighlight => HighlightingManager.Instance.GetDefinition("Json");
 
         private TextDocument originText = new TextDocument();
 
@@ -65,9 +77,9 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string mappingDefinition = string.Empty;
+        private TextDocument mappingDefinition = new TextDocument();
 
-        public string MappingDefinition
+        public TextDocument MappingDefinition
         {
             get { return mappingDefinition; }
             set
@@ -93,12 +105,13 @@ ExtractRef(Description) -> AddProperty(""contractType"")
 
         public MainWindowViewModel()
         {
-            TargetText.Text = SerializeObject(ModelBuilder.GetNewTargetObject());
-            OriginText.Text = SerializeObject(ModelBuilder.GetNewOriginObject());
-            MappingDefinition = DEFAULT_DEFINITION;
+            TargetText.Text = SerializeObject(ModelBuilder.GetNewJobAd(), false);
+            OriginText.Text = SerializeObject(ModelBuilder.GetNewVacancyDetailRead(), false);
+            MappingDefinition.Text = DEFAULT_DEFINITION;
             ConsoleOutput = string.Empty;
             TargetText.TextChanged += Text_TextChanged;
             OriginText.TextChanged += Text_TextChanged;
+            MappingDefinition.TextChanged += Text_TextChanged;
         }
 
         private void Text_TextChanged(object? sender, EventArgs e)
@@ -116,20 +129,21 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             try
             {
                 var functionProvider = new FunctionHandlerProvider();
-                functionProvider.Register<IExtractFunctionHandler<OriginObject>, ExtractRef>("ExtractRef");
-                functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddProperty>("AddProperty");
-                var origin = DeserializeObject<OriginObject>(OriginText.Text);
-                var mapper = new Mapper(functionProvider, new StringReader(MappingDefinition));
+                functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
+                functionProvider.Register<IInsertFunctionHandler<JobAd>, AddProperty>("AddProperty");
+                functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
+                var origin = DeserializeObject<VacancyDetailRead>(OriginText.Text);
+                var mapper = new Mapper(functionProvider, new StringReader(MappingDefinition.Text));
                 var (success, errors) = mapper.Load();
                 if (!success)
                 {
                     AppendToConsoleOutput(String.Join("\r\n", errors));
                     return;
                 }
-                var mapperHandler = mapper.GetMapper<OriginObject, TargetObject>();
-                var target = ModelBuilder.GetNewTargetObject();
+                var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>();
+                var target = ModelBuilder.GetNewJobAd();
                 mapperHandler.Map(origin, target);
-                TargetText.Text = SerializeObject(target);
+                TargetText.Text = SerializeObject(target, true);
                 AppendToConsoleOutput(string.Empty);
             }
             catch (MapperRuntimeException ex)
@@ -146,9 +160,19 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             }
         }
 
-        private string SerializeObject<T>(T obj)
+        private string SerializeObject<T>(T obj, bool ignoreNull)
         {
-            var result = JsonSerializer.Serialize(obj, new JsonSerializerOptions() { WriteIndented = true });
+            JsonSerializerOptions options = new JsonSerializerOptions()
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Converters = { new JsonStringEnumConverter() }
+            };
+            if (ignoreNull)
+            {
+                options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            }
+            var result = JsonSerializer.Serialize<object>(obj, options);
             return result ?? string.Empty;
         }
 
@@ -183,19 +207,41 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             ConsoleOutput = $"{text}\r\n";
         }
 
-        class ExtractRef : IExtractFunctionHandler<OriginObject>
+        class ExtractRef : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public object GetObject(OriginObject instanceObj, params object[] args)
+            public object GetObject(VacancyDetailRead instanceObj, params object[] args)
             {
-                return $"{args[0]}__new";
+                return $"{args[0]}";
             }
         }
 
-        class AddProperty : IInsertFunctionHandler<TargetObject>
+        class GenerateId : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public void SetObject(TargetObject instanceObject, object value, params object[] args)
+            public object GetObject(VacancyDetailRead instanceObj, params object[] args)
             {
-                instanceObject.Properties.Add((string)args[0], (string)value);
+                var hash = BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{args[0]}_{DateTime.Now.ToString("s")}"))).Replace("-", "");
+                return $"{args[0]}_{hash.Substring(0, 8).ToLower()}";
+            }
+        }
+
+        class AddProperty : IInsertFunctionHandler<JobAd>
+        {
+            public void SetObject(JobAd instanceObject, object value, params object[] args)
+            {
+                SinglePropertyItem? property = null;
+                switch (value)
+                {
+                    case Reference reference:
+                        property = new SinglePropertyItem { Id = reference.Id, Label = reference.Label };
+                        break;
+                    default:
+                        property = new SinglePropertyItem() { Label = value.ToString() };
+                        break;
+                }
+                if (property != null)
+                {
+                    instanceObject.Properties.Add((string)args[0], new SingleProperty() { Kind = PropertyKindEnum.Single, Items = new List<SinglePropertyItem>() { property } });
+                }
             }
         }
     }

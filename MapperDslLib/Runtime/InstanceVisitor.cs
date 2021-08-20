@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -29,7 +30,8 @@ namespace MapperDslLib.Runtime
         internal void SetInstance(T obj, object value)
         {
             var (o, p) = GetLastPropertyInstance(obj);
-            p.SetValue(o, value);
+            var convertedValue = value == null ? null : Convert.ChangeType(value, p.PropertyType, CultureInfo.InvariantCulture);
+            p.SetValue(o, convertedValue);
         }
 
         internal object GetInstance(T obj)

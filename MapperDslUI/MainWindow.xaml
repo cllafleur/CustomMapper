@@ -19,6 +19,7 @@
                 <Setter Property="FontFamily" Value="Cascadia Code"/>
                 <Setter Property="FontSize" Value="9pt"/>
                 <Setter Property="SyntaxHighlighting" Value="Json"/>
+                <Setter Property="WordWrap" Value="True"/>
             </Style>
         </Grid.Resources>
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="3" Margin="5">
@@ -32,11 +33,11 @@
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <avalonEdit:TextEditor Name="OriginModel" Grid.Row="0" Grid.Column="0" Margin="5" Document="{Binding OriginText,UpdateSourceTrigger=PropertyChanged}"  />
+            <avalonEdit:TextEditor Name="OriginModel" Grid.Row="0" Grid.Column="0" Margin="5" Document="{Binding OriginText,UpdateSourceTrigger=PropertyChanged}" />
             <avalonEdit:TextEditor Name="TargetModel" Grid.Row="0" Grid.Column="2" Margin="5" Document="{Binding TargetText,UpdateSourceTrigger=PropertyChanged}" />
             <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" />
             <GridSplitter Grid.Column="1" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-            <TextBox Name="MappingDefinition" Grid.Row="2" Grid.Column="0" Margin="5" TextWrapping="Wrap" Text="{Binding MappingDefinition,UpdateSourceTrigger=PropertyChanged}" />
+            <avalonEdit:TextEditor Name="MappingDefinition" Grid.Row="2" Grid.Column="0" Margin="5" Document="{Binding MappingDefinition,UpdateSourceTrigger=PropertyChanged}" ShowLineNumbers="True" SyntaxHighlighting="C#"/>
             <TextBox Name="ConsoleOutput" Grid.Row="2" Grid.Column="2" Margin="5" TextWrapping="Wrap" Text="{Binding ConsoleOutput}" IsReadOnly="True" TextChanged="ConsoleOutput_TextChanged"/>
         </Grid>
     </Grid>
