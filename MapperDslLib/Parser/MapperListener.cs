@@ -5,7 +5,6 @@
 
     public class MapperListener : MapperBaseListener
     {
-        private List<string> _currentRow;
         private readonly MapperVisitor _visitor;
 
         public MapperListener(MapperVisitor visitor)
