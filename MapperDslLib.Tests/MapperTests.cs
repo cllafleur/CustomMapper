@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace MapperDslLib.Tests
 {
@@ -47,17 +48,17 @@ ExtractRef(Description) -> AddProperty(""contractType"")
 
         class ExtractRef : IExtractFunctionHandler<OriginObject>
         {
-            public object GetObject(OriginObject instanceObj, params object[] args)
+            public IEnumerable<object> GetObject(OriginObject instanceObj, params object[] args)
             {
-                return $"{args[0]}__new";
+                yield return $"{args[0]}__new";
             }
         }
 
         class AddProperty : IInsertFunctionHandler<TargetObject>
         {
-            public void SetObject(TargetObject instanceObject, object value, params object[] args)
+            public void SetObject(TargetObject instanceObject, IEnumerable<object> value, params object[] args)
             {
-                instanceObject.Properties.Add((string)args[0], (string)value);
+                instanceObject.Properties.Add((string)args[0], (string)value.FirstOrDefault());
             }
         }
 

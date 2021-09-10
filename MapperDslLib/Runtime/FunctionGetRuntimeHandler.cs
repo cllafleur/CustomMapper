@@ -17,14 +17,14 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public object Get(TOrigin obj)
+        public IEnumerable<object> Get(TOrigin obj)
         {
             List<object> values = new List<object>();
             try
             {
                 foreach (var arg in arguments)
                 {
-                    values.Add(arg.Get(obj));
+                    values.AddRange(arg.Get(obj));
                 }
             }
             catch (Exception exc)
@@ -33,7 +33,8 @@ namespace MapperDslLib.Runtime
             }
             try
             {
-                return functionHandler.GetObject(obj, values.ToArray());
+                var result = functionHandler.GetObject(obj, values.ToArray());
+                return result;
             }
             catch (Exception exc)
             {

@@ -1,5 +1,6 @@
 ﻿using MapperDslLib.Parser;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace MapperDslLib.Runtime
@@ -15,11 +16,11 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public object Get(T obj)
+        public IEnumerable<object> Get(T obj)
         {
             try
             {
-                object instance = instanceVisitor.GetInstance(obj);
+                var instance = instanceVisitor.GetInstance(obj);
                 return instance;
             }
             catch (Exception exc)

@@ -1,7 +1,9 @@
-﻿namespace MapperDslLib.Runtime
+﻿using System.Collections.Generic;
+
+namespace MapperDslLib.Runtime
 {
     internal interface IGetRuntimeHandler<T>
     {
-        object Get(T obj);
+        IEnumerable<object> Get(T obj);
     }
 }

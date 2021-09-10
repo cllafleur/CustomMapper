@@ -1,4 +1,6 @@
-﻿namespace MapperDslLib.Runtime
+﻿using System.Collections.Generic;
+
+namespace MapperDslLib.Runtime
 {
     internal class TextGetRuntimeHandler<TOrigin> : IGetRuntimeHandler<TOrigin>
     {
@@ -9,9 +11,9 @@
             this.value = value;
         }
 
-        public object Get(TOrigin obj)
+        public IEnumerable<object> Get(TOrigin obj)
         {
-            return value;
+            yield return value;
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace MapperDslLib.Runtime
+﻿using System.Collections.Generic;
+
+namespace MapperDslLib.Runtime
 {
     public interface IExtractFunctionHandler<T>
     {
-        object GetObject(T instanceObj, params object[] args);
+        IEnumerable<object> GetObject(T instanceObj, params object[] args);
     }
 }

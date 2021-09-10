@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -6,10 +7,10 @@ using System.Reflection;
 
 namespace MapperDslLib.Runtime
 {
-    internal class InstanceVisitor<T>
+    public class InstanceVisitor<T>
     {
         private string value;
-        private List<PropertyInfo> navigation;
+        private PropertyInfo[] navigation;
 
         public InstanceVisitor(string value)
         {
@@ -17,27 +18,71 @@ namespace MapperDslLib.Runtime
             BuildNavigation();
         }
 
-        private (object, PropertyInfo) GetLastPropertyInstance(T obj)
+        private IEnumerable<(object, PropertyInfo)> GetLastPropertyInstance(T obj)
         {
-            object currentValue = obj;
-            foreach (var item in navigation.Take(navigation.Count - 1))
-            {
-                currentValue = item.GetValue(currentValue);
-            }
-            return (currentValue, navigation[navigation.Count - 1]);
+            return Browse(obj, navigation);
         }
 
-        internal void SetInstance(T obj, object value)
+        private IEnumerable<(object, PropertyInfo)> Browse(object o, PropertyInfo[] nav)
         {
-            var (o, p) = GetLastPropertyInstance(obj);
-            var convertedValue = value == null ? null : Convert.ChangeType(value, p.PropertyType, CultureInfo.InvariantCulture);
+            var currentValue = o;
+            bool reachedEnumerable = false;
+            for (int i = 0; i < nav.Length - 1; ++i)
+            {
+                currentValue = nav[i].GetValue(currentValue);
+                if (typeof(IEnumerable).IsAssignableFrom(nav[i].PropertyType))
+                {
+                    reachedEnumerable = true;
+                    foreach (var item in (IEnumerable)currentValue)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        foreach (var subitem in Browse(item, nav.Skip(i + 1).ToArray()))
+                        {
+                            yield return subitem;
+                        }
+                    }
+                    break;
+                }
+            }
+            if (!reachedEnumerable && currentValue != null)
+            {
+                yield return (currentValue, navigation[navigation.Length - 1]);
+            }
+        }
+
+        public void SetInstance(T obj, IEnumerable<object> value)
+        {
+            var (o, p) = GetLastPropertyInstance(obj).First();
+            var v = value.FirstOrDefault();
+            var convertedValue = value == null ? null : Convert.ChangeType(v, p.PropertyType, CultureInfo.InvariantCulture);
             p.SetValue(o, convertedValue);
         }
 
-        internal object GetInstance(T obj)
+        public IEnumerable<object> GetInstance(T obj)
         {
-            var (o, p) = GetLastPropertyInstance(obj);
-            return p.GetValue(o);
+            foreach (var (o, p) in GetLastPropertyInstance(obj))
+            {
+                if (o == null) continue;
+                var value = p.GetValue(o);
+                if (value == null) continue;
+                if (p.PropertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(p.PropertyType)/*.FindInterfaces(new TypeFilter(new Func<Type, object, bool>((t, o) => t == typeof(IEnumerable<>))), null).Any()*/)
+                {
+                    foreach (var item in (IEnumerable)value)
+                    {
+                        if (item != null)
+                        {
+                            yield return item;
+                        }
+                    }
+                }
+                else
+                {
+                    yield return value;
+                }
+            }
         }
 
         private void BuildNavigation()
@@ -46,6 +91,22 @@ namespace MapperDslLib.Runtime
             var currentType = typeof(T);
             foreach (var identifier in this.value.Split('.'))
             {
+                while (typeof(IEnumerable).IsAssignableFrom(currentType))
+                {
+                    if (currentType.IsGenericType)
+                    {
+                        currentType = currentType.GenericTypeArguments[0];
+                    }
+                    else if (currentType.IsArray)
+                    {
+                        currentType = currentType.GetElementType();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
                 var property = currentType.GetProperty(identifier);
                 if (property == null)
                 {
@@ -54,7 +115,7 @@ namespace MapperDslLib.Runtime
                 navigation.Add(property);
                 currentType = property.PropertyType;
             }
-            this.navigation = navigation;
+            this.navigation = navigation.ToArray();
         }
     }
 }

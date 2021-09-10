@@ -209,24 +209,24 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
         class ExtractRef : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public object GetObject(VacancyDetailRead instanceObj, params object[] args)
+            public IEnumerable<object> GetObject(VacancyDetailRead instanceObj, params object[] args)
             {
-                return $"{args[0]}";
+                yield return $"{args[0]}";
             }
         }
 
         class GenerateId : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public object GetObject(VacancyDetailRead instanceObj, params object[] args)
+            public IEnumerable<object> GetObject(VacancyDetailRead instanceObj, params object[] args)
             {
                 var hash = BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{args[0]}_{DateTime.Now.ToString("s")}"))).Replace("-", "");
-                return $"{args[0]}_{hash.Substring(0, 8).ToLower()}";
+                yield return $"{args[0]}_{hash.Substring(0, 8).ToLower()}";
             }
         }
 
         class AddProperty : IInsertFunctionHandler<JobAd>
         {
-            public void SetObject(JobAd instanceObject, object value, params object[] args)
+            public void SetObject(JobAd instanceObject, IEnumerable<object> value, params object[] args)
             {
                 SinglePropertyItem? property = null;
                 switch (value)
@@ -235,7 +235,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
                         property = new SinglePropertyItem { Id = reference.Id, Label = reference.Label };
                         break;
                     default:
-                        property = new SinglePropertyItem() { Label = value.ToString() };
+                        property = new SinglePropertyItem() { Label = value.FirstOrDefault().ToString() };
                         break;
                 }
                 if (property != null)

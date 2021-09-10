@@ -1,5 +1,6 @@
 ﻿using MapperDslLib.Parser;
 using System;
+using System.Collections.Generic;
 
 namespace MapperDslLib.Runtime
 {
@@ -14,7 +15,7 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public void SetValue(T obj, object value)
+        public void SetValue(T obj, IEnumerable<object> value)
         {
             try
             {

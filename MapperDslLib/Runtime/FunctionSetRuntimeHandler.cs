@@ -17,14 +17,14 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public void SetValue(T obj, object value)
+        public void SetValue(T obj, IEnumerable<object> value)
         {
             List<object> parameters = new List<object>();
             try
             {
                 foreach (var arg in arguments)
                 {
-                    parameters.Add(arg.Get(obj));
+                    parameters.AddRange(arg.Get(obj));
                 }
             }
             catch (Exception exc)
