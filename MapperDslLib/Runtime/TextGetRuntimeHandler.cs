@@ -14,14 +14,18 @@ namespace MapperDslLib.Runtime
 
         public GetResult Get(TOrigin obj)
         {
-            return new GetResult()
-            {
-                Result = GetScalar()
-            };
+            var result = new GetResult() { IsLiteral = true };
+            result.Result = GetResults(result);
+            return result;
 
-            IEnumerable<object> GetScalar()
+            IEnumerable<object> GetResults(GetResult result)
             {
-                yield return value;
+                var isFirst = true;
+                while (result.KeepEnumerate || isFirst)
+                {
+                    isFirst = false;
+                    yield return value;
+                }
             }
         }
     }

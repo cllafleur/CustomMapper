@@ -147,7 +147,8 @@ ModificationDate -> ModificationDate
             Assert.AreEqual(origin.Description, target.Description.Description);
         }
 
-        private const string CASE4 = @"(Items.Description, Items.Description2) -> AddGroupDescription(""Description"")";
+        private const string CASE4 = @"(Items.Description, Items.Description2) -> AddGroupDescription(""Description"")
+";
 
         class AddGroupDescription : IInsertFunctionHandler<TargetObject>, IInsertTupleFunctionHandler<TargetObject>
         {
@@ -205,6 +206,50 @@ ModificationDate -> ModificationDate
 
             Assert.That(target.Properties, Contains.Key("Description").WithValue("Description Description2"));
             Assert.That(target.Properties, Contains.Key("Description3").WithValue("Description3 Description4"));
+        }
+
+        private const string CASE5 = @"(Items.Description, ""Text litteral"") -> AddGroupDescription(""Description"")
+";
+
+        [Test]
+        public void Map_TwoTupleValuesWithTextLiteralAndFunctionAddGroupDescription_Success()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
+            var mapper = new Mapper(functionProvider, new StringReader(CASE5));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject()
+            {
+                Items = new List<DescriptionObject>
+                {
+                    new DescriptionObject() { Description = "Description" },
+                    new DescriptionObject() { Description = "Description3" }
+                }
+            };
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            handler.Map(origin, target);
+
+            Assert.That(target.Properties, Contains.Key("Description").WithValue("Description Text litteral"));
+            Assert.That(target.Properties, Contains.Key("Description3").WithValue("Description3 Text litteral"));
+        }
+
+        private const string CASE6 = @"(""const1"", ""const2"") -> AddGroupDescription(""Description"")
+";
+
+        [Test]
+        public void Map_TwoTupleValuesLiteralAndFunctionAddGroupDescription_Success()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
+            var mapper = new Mapper(functionProvider, new StringReader(CASE6));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject();
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            handler.Map(origin, target);
+
+            Assert.That(target.Properties, Contains.Key("const1").WithValue("const1 const2"));
         }
     }
 }

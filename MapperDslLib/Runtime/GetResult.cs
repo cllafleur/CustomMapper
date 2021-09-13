@@ -5,7 +5,7 @@ namespace MapperDslLib.Runtime
     public class GetResult
     {
         public IEnumerable<object> Result { get; set; }
-
-        internal bool InTuple { get; set; }
+        public bool IsLiteral { get; internal set; }
+        internal bool KeepEnumerate { get; set; }
     }
 }

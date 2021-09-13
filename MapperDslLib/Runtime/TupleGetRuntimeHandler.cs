@@ -20,9 +20,13 @@ namespace MapperDslLib.Runtime
         public GetResult Get(TOrigin obj)
         {
             var enumerators = new List<IEnumerator<object>>();
+            var getResults = new List<GetResult>();
             foreach (var part in tupleParts)
             {
-                enumerators.Add(part.Get(obj).Result.GetEnumerator());
+                var result = part.Get(obj);
+                if (result.IsLiteral) result.KeepEnumerate = true;
+                getResults.Add(result);
+                enumerators.Add(result.Result.GetEnumerator());
             }
             return new GetResult()
             {
@@ -31,6 +35,7 @@ namespace MapperDslLib.Runtime
 
             IEnumerable<TupleValues> GetResults()
             {
+                var firstIteration = true;
                 while (enumerators.Where(e => e != null).Any())
                 {
                     TupleValues tuple = new TupleValues();
@@ -44,7 +49,7 @@ namespace MapperDslLib.Runtime
                             if (enumerators[i].MoveNext())
                             {
                                 value = enumerators[i].Current;
-                                allEmpty = false;
+                                if (firstIteration || !getResults[i].IsLiteral) allEmpty = false;
                             }
                             else
                             {
@@ -57,7 +62,12 @@ namespace MapperDslLib.Runtime
                     if (!allEmpty)
                     {
                         yield return tuple;
-                    };
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    firstIteration = false;
                 }
             }
         }
