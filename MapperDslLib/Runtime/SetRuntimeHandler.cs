@@ -15,11 +15,11 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public void SetValue(T obj, IEnumerable<object> value)
+        public void SetValue(T obj, GetResult value)
         {
             try
             {
-                instanceVisitor.SetInstance(obj, value);
+                instanceVisitor.SetInstance(obj, value.Result);
             }
             catch (Exception exc)
             {

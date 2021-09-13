@@ -4,6 +4,6 @@ namespace MapperDslLib.Runtime
 {
     internal interface IGetRuntimeHandler<T>
     {
-        IEnumerable<object> Get(T obj);
+        GetResult Get(T obj);
     }
 }

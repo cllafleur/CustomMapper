@@ -7,13 +7,9 @@
     {
         public override object VisitStatement([NotNull] MapperParser.StatementContext context)
         {
-            var exprs = context.expr();
-            var originExpr = (IExpressionMapper)this.Visit(exprs[0]);
+            var originExpr = (IExpressionMapper)this.Visit(context.extractExpr());
             IExpressionMapper targetExpr = null;
-            if (exprs.Length > 1)
-            {
-                targetExpr = (IExpressionMapper)this.Visit(exprs[1]);
-            }
+            targetExpr = (IExpressionMapper)this.Visit(context.insertExpr());
             return new StatementMapper(originExpr, targetExpr, new ParsingInfo(context.Start.Line, context.GetText()));
         }
 
@@ -31,6 +27,20 @@
                 }
             }
             return new FunctionMapper(identifier, arguments, new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
+        public override object VisitTupleOfExpr([NotNull] MapperParser.TupleOfExprContext context)
+        {
+            List<IExpressionMapper> items = new List<IExpressionMapper>();
+            foreach (var child in context.children)
+            {
+                var part = this.Visit(child);
+                if (part is IExpressionMapper expression)
+                {
+                    items.Add(expression);
+                }
+            }
+            return new TupleMapper(items.ToArray(), new ParsingInfo(context.Start.Line, context.GetText()));
         }
 
         public override object VisitExpr([NotNull] MapperParser.ExprContext context)

@@ -57,6 +57,10 @@ namespace MapperDslLib.Runtime
         {
             var (o, p) = GetLastPropertyInstance(obj).First();
             var v = value.FirstOrDefault();
+            if (v is TupleValues values)
+            {
+                v = values.FirstOrDefault();
+            }
             var convertedValue = value == null ? null : Convert.ChangeType(v, p.PropertyType, CultureInfo.InvariantCulture);
             p.SetValue(o, convertedValue);
         }
@@ -110,7 +114,7 @@ namespace MapperDslLib.Runtime
                 var property = currentType.GetProperty(identifier);
                 if (property == null)
                 {
-                    throw new MapperVisitException($"Property '{identifier}' not found");
+                   throw new MapperVisitException($"Property '{identifier}' not found");
                 }
                 navigation.Add(property);
                 currentType = property.PropertyType;

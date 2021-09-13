@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MapperDslLib.Runtime
 {
@@ -11,9 +12,17 @@ namespace MapperDslLib.Runtime
             this.value = value;
         }
 
-        public IEnumerable<object> Get(TOrigin obj)
+        public GetResult Get(TOrigin obj)
         {
-            yield return value;
+            return new GetResult()
+            {
+                Result = GetScalar()
+            };
+
+            IEnumerable<object> GetScalar()
+            {
+                yield return value;
+            }
         }
     }
 }

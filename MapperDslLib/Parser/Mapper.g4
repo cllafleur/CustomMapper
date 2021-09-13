@@ -5,11 +5,23 @@ file
 	;
 
 statement
-	: expr ASSIGNMENT expr NEWLINE
+	: extractExpr ASSIGNMENT insertExpr NEWLINE
+	;
+
+extractExpr
+	: ( expr | tupleOfExpr )
+	;
+
+insertExpr
+	: expr
 	;
 
 expr
 	: ( instanceRef | function | LITTERAL )
+	;
+
+tupleOfExpr
+	: TUPLE_START expr ( TUPLE_SEPARATOR expr )* TUPLE_END
 	;
 
 function
@@ -18,6 +30,18 @@ function
 
 instanceRef
 	: IDENTIFIER (DOT IDENTIFIER)*
+	;
+
+TUPLE_START
+	: '('
+	;
+
+TUPLE_END
+	: ')'
+	;
+
+TUPLE_SEPARATOR
+	: ','
 	;
 
 ASSIGNMENT

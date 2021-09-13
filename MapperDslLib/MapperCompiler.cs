@@ -43,8 +43,21 @@ namespace MapperDslLib
                     return new TextGetRuntimeHandler<T>(textMapper.Value, textMapper.ParsingInfo);
                 case FunctionMapper function:
                     return BuildFunctionGetRuntimeHandler<T>(function);
+                case TupleMapper tupleMapper:
+                    return BuildTupleGetRuntimeHandler<T>(tupleMapper);
+                default:
+                    throw new NotSupportedException($"Unknown GetRuntimeHandler : {expression}");
             }
-            return null;
+        }
+
+        private IGetRuntimeHandler<T> BuildTupleGetRuntimeHandler<T>(TupleMapper tupleMapper)
+        {
+            var tupleParts = new List<IGetRuntimeHandler<T>>();
+            foreach (var part in tupleMapper.Items)
+            {
+                tupleParts.Add(BuildGetRuntimeHandler<T>(part));
+            }
+            return new TupleGetRuntimeHandler<T>(tupleParts, tupleMapper.ParsingInfo);
         }
 
         private IGetRuntimeHandler<T> BuildFunctionGetRuntimeHandler<T>(FunctionMapper functionMapper)

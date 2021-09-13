@@ -7,24 +7,26 @@ namespace MapperDslLib.Runtime
     internal class FunctionSetRuntimeHandler<T> : ISetRuntimeHandler<T>
     {
         private IInsertFunctionHandler<T> insertFunctionHandler;
+        private IInsertTupleFunctionHandler<T> insertTupleFunctionHandler;
         private List<IGetRuntimeHandler<T>> arguments;
         private ParsingInfo parsingInfos;
 
         public FunctionSetRuntimeHandler(IInsertFunctionHandler<T> insertFunctionHandler, List<IGetRuntimeHandler<T>> arguments, Parser.ParsingInfo parsingInfo)
         {
             this.insertFunctionHandler = insertFunctionHandler;
+            this.insertTupleFunctionHandler = insertFunctionHandler as IInsertTupleFunctionHandler<T>;
             this.arguments = arguments;
             this.parsingInfos = parsingInfo;
         }
 
-        public void SetValue(T obj, IEnumerable<object> value)
+        public void SetValue(T obj, GetResult value)
         {
             List<object> parameters = new List<object>();
             try
             {
                 foreach (var arg in arguments)
                 {
-                    parameters.AddRange(arg.Get(obj));
+                    parameters.AddRange(arg.Get(obj).Result);
                 }
             }
             catch (Exception exc)
@@ -33,7 +35,14 @@ namespace MapperDslLib.Runtime
             }
             try
             {
-                insertFunctionHandler.SetObject(obj, value, parameters.ToArray());
+                if (insertTupleFunctionHandler != null && value.Result is IEnumerable<TupleValues> tupleEnumerable)
+                {
+                    insertTupleFunctionHandler.SetObject(obj, tupleEnumerable, parameters.ToArray());
+                }
+                else
+                {
+                    insertFunctionHandler.SetObject(obj, value.Result, parameters.ToArray());
+                }
             }
             catch (Exception exc)
             {

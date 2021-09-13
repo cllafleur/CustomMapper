@@ -16,12 +16,12 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public IEnumerable<object> Get(T obj)
+        public GetResult Get(T obj)
         {
             try
             {
                 var instance = instanceVisitor.GetInstance(obj);
-                return instance;
+                return new GetResult() { Result = instance };
             }
             catch (Exception exc)
             {

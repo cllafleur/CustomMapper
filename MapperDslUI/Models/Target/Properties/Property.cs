@@ -6,6 +6,6 @@
     [XmlInclude(typeof(CompositeProperty))]
     public class Property
     {
-        public PropertyKindEnum Kind { get; set; }
+        public PropertyKindEnum Kind { get; protected set; }
     }
 }

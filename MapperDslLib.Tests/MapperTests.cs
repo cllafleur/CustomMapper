@@ -21,6 +21,11 @@ ModificationDate -> ModificationDate
 ExtractRef(Description) -> AddProperty(""contractType"")
             ";
 
+        private const string CASE3 = @"Title -> Description.Title
+(Description) -> Description.Description
+ModificationDate -> ModificationDate
+";
+
         class DescriptionObject
         {
             public string Title { get; set; }
@@ -35,6 +40,8 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             public string Description { get; set; }
 
             public DateTime ModificationDate { get; set; }
+
+            public List<DescriptionObject> Items { get; set; }
         }
 
         class TargetObject
@@ -48,9 +55,20 @@ ExtractRef(Description) -> AddProperty(""contractType"")
 
         class ExtractRef : IExtractFunctionHandler<OriginObject>
         {
-            public IEnumerable<object> GetObject(OriginObject instanceObj, params object[] args)
+            public GetResult GetObject(OriginObject instanceObj, IEnumerable<object>[] args)
             {
-                yield return $"{args[0]}__new";
+                return new GetResult()
+                {
+                    Result = GetResults()
+                };
+
+                IEnumerable<object> GetResults()
+                {
+                    foreach (var item in args[0])
+                    {
+                        yield return $"{item}__new";
+                    }
+                }
             }
         }
 
@@ -106,5 +124,87 @@ ExtractRef(Description) -> AddProperty(""contractType"")
             Assert.That(target.Properties, Contains.Key("contractType").WithValue("superdescription__new"));
         }
 
+        [Test]
+        public void Map_ScalarAndFunctionPropertiesWithTuple_Success()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IExtractFunctionHandler<OriginObject>, ExtractRef>("ExtractRef");
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddProperty>("AddProperty");
+            var mapper = new Mapper(functionProvider, new StringReader(CASE3));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject()
+            {
+                Title = "supertitle",
+                Description = "superdescription",
+                ModificationDate = new DateTime(2021, 07, 31),
+            };
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            handler.Map(origin, target);
+
+            Assert.AreEqual(origin.Title, target.Description.Title);
+            Assert.AreEqual(origin.ModificationDate, target.ModificationDate);
+            Assert.AreEqual(origin.Description, target.Description.Description);
+        }
+
+        private const string CASE4 = @"(Items.Description, Items.Description2) -> AddGroupDescription(""Description"")";
+
+        class AddGroupDescription : IInsertFunctionHandler<TargetObject>, IInsertTupleFunctionHandler<TargetObject>
+        {
+            public void SetObject(TargetObject instanceObject, IEnumerable<object> value, params object[] args)
+            {
+                throw new NotSupportedException();
+            }
+
+            public void SetObject(TargetObject instanceObject, IEnumerable<IEnumerable<object>> value, params object[] args)
+            {
+                foreach (var item in value)
+                {
+                    var items = item.ToArray();
+                    instanceObject.Properties.Add((string)items[0], string.Join(" ", items));
+                }
+            }
+        }
+
+        [Test]
+        public void Map_TwoTupleValuesAndFunctionAddGroupDescription_Success()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
+            var mapper = new Mapper(functionProvider, new StringReader(CASE4));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject()
+            {
+                Items = new List<DescriptionObject> { new DescriptionObject() { Description = "Description", Description2 = "Description2" } }
+            };
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            handler.Map(origin, target);
+
+            Assert.That(target.Properties, Contains.Key("Description").WithValue("Description Description2"));
+        }
+
+        [Test]
+        public void Map_TwoTupleValuesMultipleAndFunctionAddGroupDescription_Success()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
+            var mapper = new Mapper(functionProvider, new StringReader(CASE4));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject()
+            {
+                Items = new List<DescriptionObject>
+                {
+                    new DescriptionObject() { Description = "Description", Description2 = "Description2" },
+                    new DescriptionObject() { Description = "Description3", Description2 = "Description4" }
+                }
+            };
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            handler.Map(origin, target);
+
+            Assert.That(target.Properties, Contains.Key("Description").WithValue("Description Description2"));
+            Assert.That(target.Properties, Contains.Key("Description3").WithValue("Description3 Description4"));
+        }
     }
 }

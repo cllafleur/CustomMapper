@@ -3,7 +3,7 @@
 namespace MapperDslUI.Models.Target.Properties
 {
 
-    public class CompositePropertyItem : Dictionary<string, SinglePropertyItem>
+    public class CompositePropertyItem : List<SinglePropertyItem>
     {
     }
 }
