@@ -23,5 +23,10 @@ namespace MapperDslLib
         {
             registeredTypes.Add(identifier, typeof(TImplementation));
         }
+
+        public void Register<T>(string identifier, Type implementationType)
+        {
+            registeredTypes.Add(identifier, implementationType);
+        }
     }
 }

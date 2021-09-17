@@ -12,13 +12,13 @@ namespace MapperDslLib.Runtime
             this.value = value;
         }
 
-        public GetResult Get(TOrigin obj)
+        public SourceResult Get(TOrigin obj)
         {
-            var result = new GetResult() { IsLiteral = true };
+            var result = new SourceResult() { IsLiteral = true };
             result.Result = GetResults(result);
             return result;
 
-            IEnumerable<object> GetResults(GetResult result)
+            IEnumerable<object> GetResults(SourceResult result)
             {
                 var isFirst = true;
                 while (result.KeepEnumerate || isFirst)

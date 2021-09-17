@@ -1,4 +1,6 @@
-﻿namespace MapperDslLib
+﻿using System;
+
+namespace MapperDslLib
 {
     public interface IFunctionHandlerProvider
     {
@@ -6,5 +8,7 @@
 
         void Register<T, TImplementation>(string identifier)
             where TImplementation : class, new();
+
+        void Register<T>(string identifier, Type implementationType);
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace MapperDslLib.Runtime
 {
     public interface IExtractFunctionHandler<T>
     {
-        GetResult GetObject(T instanceObj, IEnumerable<object>[] args);
+        SourceResult GetObject(T instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args);
     }
 }

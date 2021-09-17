@@ -16,12 +16,13 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public GetResult Get(T obj)
+        public SourceResult Get(T obj)
         {
             try
             {
                 var instance = instanceVisitor.GetInstance(obj);
-                return new GetResult() { Result = instance };
+                var infos = instanceVisitor.GetLastPropertyInfo();
+                return new SourceResult() { Result = instance, DataInfo = new DataSourceInfo() { PropertyInfo = infos } };
             }
             catch (Exception exc)
             {

@@ -15,7 +15,7 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public void SetValue(T obj, GetResult value)
+        public void SetValue(T obj, SourceResult value)
         {
             try
             {

@@ -18,6 +18,11 @@ namespace MapperDslLib.Runtime
             BuildNavigation();
         }
 
+        public PropertyInfo GetLastPropertyInfo()
+        {
+            return navigation[navigation.Length - 1];
+        }
+
         private IEnumerable<(object, PropertyInfo)> GetLastPropertyInstance(T obj)
         {
             return Browse(obj, navigation);

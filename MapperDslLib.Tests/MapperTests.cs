@@ -55,9 +55,9 @@ ModificationDate -> ModificationDate
 
         class ExtractRef : IExtractFunctionHandler<OriginObject>
         {
-            public GetResult GetObject(OriginObject instanceObj, IEnumerable<object>[] args)
+            public SourceResult GetObject(OriginObject instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args)
             {
-                return new GetResult()
+                return new SourceResult()
                 {
                     Result = GetResults()
                 };
@@ -74,9 +74,9 @@ ModificationDate -> ModificationDate
 
         class AddProperty : IInsertFunctionHandler<TargetObject>
         {
-            public void SetObject(TargetObject instanceObject, IEnumerable<object> value, params object[] args)
+            public void SetObject(TargetObject instanceObject, SourceResult source, params object[] args)
             {
-                instanceObject.Properties.Add((string)args[0], (string)value.FirstOrDefault());
+                instanceObject.Properties.Add((string)args[0], (string)source.Result.FirstOrDefault());
             }
         }
 
@@ -152,12 +152,12 @@ ModificationDate -> ModificationDate
 
         class AddGroupDescription : IInsertFunctionHandler<TargetObject>, IInsertTupleFunctionHandler<TargetObject>
         {
-            public void SetObject(TargetObject instanceObject, IEnumerable<object> value, params object[] args)
+            public void SetObject(TargetObject instanceObject, SourceResult source, params object[] args)
             {
                 throw new NotSupportedException();
             }
 
-            public void SetObject(TargetObject instanceObject, IEnumerable<IEnumerable<object>> value, params object[] args)
+            public void SetObject(TargetObject instanceObject, DataSourceInfo originInfo, IEnumerable<IEnumerable<object>> value, params object[] args)
             {
                 foreach (var item in value)
                 {

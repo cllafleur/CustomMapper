@@ -1,6 +1,7 @@
 ﻿using MapperDslLib.Parser;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MapperDslLib.Runtime
 {
@@ -17,14 +18,17 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public GetResult Get(TOrigin obj)
+        public SourceResult Get(TOrigin obj)
         {
             var values = new List<IEnumerable<object>>();
+            DataSourceInfo originInfo = null;
             try
             {
                 foreach (var arg in arguments)
                 {
-                    values.Add(arg.Get(obj).Result);
+                    var result = arg.Get(obj);
+                    originInfo = result.DataInfo;
+                    values.Add(result.Result);
                 }
             }
             catch (Exception exc)
@@ -33,7 +37,7 @@ namespace MapperDslLib.Runtime
             }
             try
             {
-                var result = functionHandler.GetObject(obj, values.ToArray());
+                var result = functionHandler.GetObject(obj, originInfo, values.ToArray());
                 return result;
             }
             catch (Exception exc)

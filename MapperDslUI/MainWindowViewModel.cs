@@ -41,7 +41,7 @@ Criteria.CriteriaCustomFields.LongText1 -> AddProperty(""InternalInformations"")
 ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 ";
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
         {
@@ -114,7 +114,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             MappingDefinition.TextChanged += Text_TextChanged;
         }
 
-        private void Text_TextChanged(object? sender, EventArgs e)
+        private void Text_TextChanged(object sender, EventArgs e)
         {
             DoMap();
         }
@@ -209,9 +209,9 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
         class ExtractRef : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public GetResult GetObject(VacancyDetailRead instanceObj, IEnumerable<object>[] args)
+            public SourceResult GetObject(VacancyDetailRead instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args)
             {
-                return new GetResult()
+                return new SourceResult()
                 {
                     Result = GetResults()
                 };
@@ -228,9 +228,9 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
         class GenerateId : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public GetResult GetObject(VacancyDetailRead instanceObj, IEnumerable<object>[] args)
+            public SourceResult GetObject(VacancyDetailRead instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args)
             {
-                return new GetResult()
+                return new SourceResult()
                 {
                     Result = GetResults()
                 };
@@ -245,11 +245,11 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
         class AddProperty : IInsertFunctionHandler<JobAd>, IInsertTupleFunctionHandler<JobAd>
         {
-            public void SetObject(JobAd instanceObject, IEnumerable<object> value, params object[] args)
+            public void SetObject(JobAd instanceObject, SourceResult source, params object[] args)
             {
-                foreach (var item in value)
+                foreach (var item in source.Result)
                 {
-                    SinglePropertyItem? property = null;
+                    SinglePropertyItem property = null;
                     switch (item)
                     {
                         case Reference reference:
@@ -273,7 +273,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
                 }
             }
 
-            public void SetObject(JobAd instanceObject, IEnumerable<IEnumerable<object>> value, params object[] args)
+            public void SetObject(JobAd instanceObject, DataSourceInfo originInfo, IEnumerable<IEnumerable<object>> value, params object[] args)
             {
                 foreach (var tuple in value)
                 {
@@ -286,8 +286,10 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
                     {
                         1 => new SingleProperty() { Items = new List<SinglePropertyItem>() { BuildSingleProperty(tupleValues[0]) } },
                         > 1 => BuildCompositeItem(tupleValues),
+                        _ => null,
                     };
 
+                    if (property == null) continue;
 
                     if (!instanceObject.Properties.ContainsKey((string)args[0]))
                     {

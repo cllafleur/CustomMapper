@@ -17,10 +17,10 @@ namespace MapperDslLib.Runtime
             this.parsingInfo = parsingInfo;
         }
 
-        public GetResult Get(TOrigin obj)
+        public SourceResult Get(TOrigin obj)
         {
             var enumerators = new List<IEnumerator<object>>();
-            var getResults = new List<GetResult>();
+            var getResults = new List<SourceResult>();
             foreach (var part in tupleParts)
             {
                 var result = part.Get(obj);
@@ -28,7 +28,7 @@ namespace MapperDslLib.Runtime
                 getResults.Add(result);
                 enumerators.Add(result.Result.GetEnumerator());
             }
-            return new GetResult()
+            return new SourceResult()
             {
                 Result = GetResults()
             };

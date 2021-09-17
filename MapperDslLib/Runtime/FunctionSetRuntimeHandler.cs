@@ -1,6 +1,8 @@
 ﻿using MapperDslLib.Parser;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace MapperDslLib.Runtime
 {
@@ -19,14 +21,15 @@ namespace MapperDslLib.Runtime
             this.parsingInfos = parsingInfo;
         }
 
-        public void SetValue(T obj, GetResult value)
+        public void SetValue(T obj, SourceResult value)
         {
             List<object> parameters = new List<object>();
             try
             {
                 foreach (var arg in arguments)
                 {
-                    parameters.AddRange(arg.Get(obj).Result);
+                    var argResult = arg.Get(obj);
+                    parameters.AddRange(argResult.Result);
                 }
             }
             catch (Exception exc)
@@ -37,11 +40,11 @@ namespace MapperDslLib.Runtime
             {
                 if (insertTupleFunctionHandler != null && value.Result is IEnumerable<TupleValues> tupleEnumerable)
                 {
-                    insertTupleFunctionHandler.SetObject(obj, tupleEnumerable, parameters.ToArray());
+                    insertTupleFunctionHandler.SetObject(obj, null, tupleEnumerable, parameters.ToArray());
                 }
                 else
                 {
-                    insertFunctionHandler.SetObject(obj, value.Result, parameters.ToArray());
+                    insertFunctionHandler.SetObject(obj, value, parameters.ToArray());
                 }
             }
             catch (Exception exc)
