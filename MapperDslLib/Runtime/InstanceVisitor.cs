@@ -100,31 +100,12 @@ namespace MapperDslLib.Runtime
             var currentType = typeof(T);
             foreach (var identifier in this.value.Split('.'))
             {
-                while (typeof(IEnumerable).IsAssignableFrom(currentType))
-                {
-                    if (currentType.IsGenericType)
-                    {
-                        currentType = currentType.GenericTypeArguments[0];
-                    }
-                    else if (currentType.IsArray)
-                    {
-                        currentType = currentType.GetElementType();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                var property = currentType.GetProperty(identifier);
-                if (property == null)
-                {
-                   throw new MapperVisitException($"Property '{identifier}' not found");
-                }
+                PropertyInfo property;
+                (property, currentType) = ModelDescription.GetChild(currentType, identifier);
                 navigation.Add(property);
-                currentType = property.PropertyType;
             }
             this.navigation = navigation.ToArray();
         }
+
     }
 }

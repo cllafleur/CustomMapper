@@ -157,9 +157,9 @@ ModificationDate -> ModificationDate
                 throw new NotSupportedException();
             }
 
-            public void SetObject(TargetObject instanceObject, DataSourceInfo originInfo, IEnumerable<IEnumerable<object>> value, params object[] args)
+            public void SetObject(TargetObject instanceObject, TupleSourceResult source, params object[] args)
             {
-                foreach (var item in value)
+                foreach (var item in source.Result)
                 {
                     var items = item.ToArray();
                     instanceObject.Properties.Add((string)items[0], string.Join(" ", items));

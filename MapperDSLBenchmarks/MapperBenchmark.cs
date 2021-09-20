@@ -72,6 +72,16 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             }
         }
 
+        [Benchmark]
+        public void SecondBenchWithCache()
+        {
+            Settings.EnableReflectionCaching = true;
+            for (int i = 0; i < IterationNumber; i++)
+            {
+                BlockToTest();
+            }
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void BlockToTest()
         {
@@ -86,7 +96,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             mapperHandler.Map(origin, target);
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void ParallelBench()
         {
             Parallel.For(0L, IterationNumber, new ParallelOptions() { MaxDegreeOfParallelism = 20 }, (i) =>

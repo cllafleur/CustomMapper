@@ -38,9 +38,9 @@ namespace MapperDslLib.Runtime
             }
             try
             {
-                if (insertTupleFunctionHandler != null && value.Result is IEnumerable<TupleValues> tupleEnumerable)
+                if (insertTupleFunctionHandler != null && value is TupleSourceResult tupleSource)
                 {
-                    insertTupleFunctionHandler.SetObject(obj, null, tupleEnumerable, parameters.ToArray());
+                    insertTupleFunctionHandler.SetObject(obj, tupleSource, parameters.ToArray());
                 }
                 else
                 {

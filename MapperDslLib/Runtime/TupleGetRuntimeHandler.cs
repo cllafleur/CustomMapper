@@ -21,14 +21,16 @@ namespace MapperDslLib.Runtime
         {
             var enumerators = new List<IEnumerator<object>>();
             var getResults = new List<SourceResult>();
+            var tupleSources = new TupleSources();
             foreach (var part in tupleParts)
             {
                 var result = part.Get(obj);
                 if (result.IsLiteral) result.KeepEnumerate = true;
                 getResults.Add(result);
                 enumerators.Add(result.Result.GetEnumerator());
+                tupleSources.Add(result);
             }
-            return new SourceResult()
+            return new TupleSourceResult()
             {
                 Result = GetResults()
             };

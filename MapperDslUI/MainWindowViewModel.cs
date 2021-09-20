@@ -273,9 +273,9 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
                 }
             }
 
-            public void SetObject(JobAd instanceObject, DataSourceInfo originInfo, IEnumerable<IEnumerable<object>> value, params object[] args)
+            public void SetObject(JobAd instanceObject, TupleSourceResult source, params object[] args)
             {
-                foreach (var tuple in value)
+                foreach (var tuple in source.Result)
                 {
                     var tupleValues = new List<object>();
                     foreach (var item in tuple)

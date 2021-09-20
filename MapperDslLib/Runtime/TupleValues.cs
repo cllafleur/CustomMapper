@@ -2,7 +2,7 @@
 
 namespace MapperDslLib.Runtime
 {
-    public class TupleValues: Collection<object>
+    public class TupleValues : Collection<object>
     {
 
     }
