@@ -209,7 +209,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
         class ExtractRef : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public SourceResult GetObject(VacancyDetailRead instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args)
+            public SourceResult GetObject(VacancyDetailRead instanceObj, Parameters parameters)
             {
                 return new SourceResult()
                 {
@@ -218,7 +218,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
                 IEnumerable<object> GetResults()
                 {
-                    foreach (var item in args[0])
+                    foreach (var item in parameters.Values[0].Result)
                     {
                         yield return $"{item}";
                     }
@@ -228,7 +228,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
         class GenerateId : IExtractFunctionHandler<VacancyDetailRead>
         {
-            public SourceResult GetObject(VacancyDetailRead instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args)
+            public SourceResult GetObject(VacancyDetailRead instanceObj, Parameters parameters)
             {
                 return new SourceResult()
                 {
@@ -237,15 +237,15 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
                 IEnumerable<object> GetResults()
                 {
-                    var hash = BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{args[0].FirstOrDefault()}_{DateTime.Now.ToString("s")}"))).Replace("-", "");
-                    yield return $"{args[0].FirstOrDefault()}_{hash.Substring(0, 8).ToLower()}";
+                    var hash = BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{parameters.Values[0].Result.FirstOrDefault()}_{DateTime.Now.ToString("s")}"))).Replace("-", "");
+                    yield return $"{parameters.Values[0].Result.FirstOrDefault()}_{hash.Substring(0, 8).ToLower()}";
                 }
             }
         }
 
         class AddProperty : IInsertFunctionHandler<JobAd>, IInsertTupleFunctionHandler<JobAd>
         {
-            public void SetObject(JobAd instanceObject, SourceResult source, params object[] args)
+            public void SetObject(JobAd instanceObject, SourceResult source, Parameters parameters)
             {
                 foreach (var item in source.Result)
                 {
@@ -261,19 +261,19 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
                     }
                     if (property != null)
                     {
-                        if (!instanceObject.Properties.ContainsKey((string)args[0]))
+                        if (!instanceObject.Properties.ContainsKey((string)parameters.Values[0].Result.First()))
                         {
-                            instanceObject.Properties.Add((string)args[0], new SingleProperty() { Items = new List<SinglePropertyItem>() { property } });
+                            instanceObject.Properties.Add((string)parameters.Values[0].Result.First(), new SingleProperty() { Items = new List<SinglePropertyItem>() { property } });
                         }
                         else
                         {
-                            ((SingleProperty)instanceObject.Properties[(string)args[0]]).Items.Add(property);
+                            ((SingleProperty)instanceObject.Properties[(string)parameters.Values[0].Result.First()]).Items.Add(property);
                         }
                     }
                 }
             }
 
-            public void SetObject(JobAd instanceObject, TupleSourceResult source, params object[] args)
+            public void SetObject(JobAd instanceObject, TupleSourceResult source, Parameters parameters)
             {
                 foreach (var tuple in source.Result)
                 {
@@ -291,19 +291,19 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 
                     if (property == null) continue;
 
-                    if (!instanceObject.Properties.ContainsKey((string)args[0]))
+                    if (!instanceObject.Properties.ContainsKey((string)parameters.Values[0].Result.First()))
                     {
-                        instanceObject.Properties.Add((string)args[0], property);
+                        instanceObject.Properties.Add((string)parameters.Values[0].Result.First(), property);
                     }
                     else
                     {
                         switch (property)
                         {
                             case SingleProperty singleProperty:
-                                ((SingleProperty)instanceObject.Properties[(string)args[0]]).Items.Add(singleProperty.Items[0]);
+                                ((SingleProperty)instanceObject.Properties[(string)parameters.Values[0].Result.First()]).Items.Add(singleProperty.Items[0]);
                                 break;
                             case CompositeProperty compositeProperty:
-                                ((CompositeProperty)instanceObject.Properties[(string)args[0]]).Items.Add(compositeProperty.Items[0]);
+                                ((CompositeProperty)instanceObject.Properties[(string)parameters.Values[0].Result.First()]).Items.Add(compositeProperty.Items[0]);
                                 break;
                         }
 

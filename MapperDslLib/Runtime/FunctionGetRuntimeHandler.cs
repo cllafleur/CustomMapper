@@ -20,16 +20,16 @@ namespace MapperDslLib.Runtime
 
         public SourceResult Get(TOrigin obj)
         {
-            var values = new List<IEnumerable<object>>();
-            DataSourceInfo originInfo = null;
+            var values = new List<SourceResult>();
+            var parameters = new Parameters();
             try
             {
                 foreach (var arg in arguments)
                 {
                     var result = arg.Get(obj);
-                    originInfo = result.DataInfo;
-                    values.Add(result.Result);
+                    values.Add(result);
                 }
+                parameters.Values = values.ToArray();
             }
             catch (Exception exc)
             {
@@ -37,7 +37,7 @@ namespace MapperDslLib.Runtime
             }
             try
             {
-                var result = functionHandler.GetObject(obj, originInfo, values.ToArray());
+                var result = functionHandler.GetObject(obj, parameters);
                 return result;
             }
             catch (Exception exc)

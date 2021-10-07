@@ -55,7 +55,7 @@ ModificationDate -> ModificationDate
 
         class ExtractRef : IExtractFunctionHandler<OriginObject>
         {
-            public SourceResult GetObject(OriginObject instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args)
+            public SourceResult GetObject(OriginObject instanceObj, Parameters parameters)
             {
                 return new SourceResult()
                 {
@@ -64,7 +64,7 @@ ModificationDate -> ModificationDate
 
                 IEnumerable<object> GetResults()
                 {
-                    foreach (var item in args[0])
+                    foreach (var item in parameters.Values[0].Result)
                     {
                         yield return $"{item}__new";
                     }
@@ -74,9 +74,9 @@ ModificationDate -> ModificationDate
 
         class AddProperty : IInsertFunctionHandler<TargetObject>
         {
-            public void SetObject(TargetObject instanceObject, SourceResult source, params object[] args)
+            public void SetObject(TargetObject instanceObject, SourceResult source, Parameters parameters)
             {
-                instanceObject.Properties.Add((string)args[0], (string)source.Result.FirstOrDefault());
+                instanceObject.Properties.Add((string)parameters.Values[0].Result.First(), (string)source.Result.FirstOrDefault());
             }
         }
 
@@ -152,12 +152,12 @@ ModificationDate -> ModificationDate
 
         class AddGroupDescription : IInsertFunctionHandler<TargetObject>, IInsertTupleFunctionHandler<TargetObject>
         {
-            public void SetObject(TargetObject instanceObject, SourceResult source, params object[] args)
+            public void SetObject(TargetObject instanceObject, SourceResult source, Parameters parameters)
             {
                 throw new NotSupportedException();
             }
 
-            public void SetObject(TargetObject instanceObject, TupleSourceResult source, params object[] args)
+            public void SetObject(TargetObject instanceObject, TupleSourceResult source, Parameters parameters)
             {
                 foreach (var item in source.Result)
                 {
@@ -243,6 +243,24 @@ ModificationDate -> ModificationDate
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
             var mapper = new Mapper(functionProvider, new StringReader(CASE6));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject();
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            handler.Map(origin, target);
+
+            Assert.That(target.Properties, Contains.Key("const1").WithValue("const1 const2"));
+        }
+
+        private const string CASE7 = @"(""const1"", ""const2"") -> AddGroupDescription(""Description"", (""Item1"", ""Item2""))
+";
+
+        [Test]
+        public void Map_TupleValuesLiteralAndFunctionAddGroupDescriptionWithTupleParameter_Success()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
+            var mapper = new Mapper(functionProvider, new StringReader(CASE7));
             mapper.Load();
             var handler = mapper.GetMapper<OriginObject, TargetObject>();
             var origin = new OriginObject();

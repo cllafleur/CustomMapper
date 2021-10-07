@@ -32,6 +32,7 @@ namespace MapperDslLib.Runtime
             }
             return new TupleSourceResult()
             {
+                TupleDataInfo = tupleSources.ToArray(),
                 Result = GetResults()
             };
 

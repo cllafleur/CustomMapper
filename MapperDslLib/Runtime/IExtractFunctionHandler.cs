@@ -5,6 +5,6 @@ namespace MapperDslLib.Runtime
 {
     public interface IExtractFunctionHandler<T>
     {
-        SourceResult GetObject(T instanceObj, DataSourceInfo originInfo, IEnumerable<object>[] args);
+        SourceResult GetObject(T instanceObj, Parameters parameters);
     }
 }

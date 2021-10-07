@@ -23,14 +23,16 @@ namespace MapperDslLib.Runtime
 
         public void SetValue(T obj, SourceResult value)
         {
-            List<object> parameters = new List<object>();
+            var values = new List<SourceResult>();
+            var parameters = new Parameters();
             try
             {
                 foreach (var arg in arguments)
                 {
                     var argResult = arg.Get(obj);
-                    parameters.AddRange(argResult.Result);
+                    values.Add(argResult);
                 }
+                parameters.Values = values.ToArray();
             }
             catch (Exception exc)
             {
@@ -40,11 +42,11 @@ namespace MapperDslLib.Runtime
             {
                 if (insertTupleFunctionHandler != null && value is TupleSourceResult tupleSource)
                 {
-                    insertTupleFunctionHandler.SetObject(obj, tupleSource, parameters.ToArray());
+                    insertTupleFunctionHandler.SetObject(obj, tupleSource, parameters);
                 }
                 else
                 {
-                    insertFunctionHandler.SetObject(obj, value, parameters.ToArray());
+                    insertFunctionHandler.SetObject(obj, value, parameters);
                 }
             }
             catch (Exception exc)

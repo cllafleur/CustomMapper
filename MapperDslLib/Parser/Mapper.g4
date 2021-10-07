@@ -9,43 +9,35 @@ statement
 	;
 
 extractExpr
-	: ( expr | tupleOfExpr )
+	: complexExpr
 	;
 
 insertExpr
-	: expr
+	: instanceRef | function
 	;
 
 expr
 	: ( instanceRef | function | LITTERAL )
 	;
 
+complexExpr
+	: ( tupleOfExpr | expr )
+	;
+
 tupleOfExpr
-	: TUPLE_START expr ( TUPLE_SEPARATOR expr )* TUPLE_END
+	: '(' expr ( ',' expr )* ')'
 	;
 
 function
-	: IDENTIFIER '(' expr ')'
+	: IDENTIFIER '(' complexExpr ( ',' complexExpr )* ')'
 	;
 
 instanceRef
 	: IDENTIFIER (DOT IDENTIFIER)*
 	;
 
-TUPLE_START
-	: '('
-	;
-
-TUPLE_END
-	: ')'
-	;
-
-TUPLE_SEPARATOR
-	: ','
-	;
-
 ASSIGNMENT
-	: ('-' | '=') '>'
+	: [-=] '>'
 	;
 
 DOT
@@ -69,5 +61,5 @@ LINE_COMMENT
 	;
 
 WS
-	: ' '+ -> skip
+	: [ \t]+ -> skip
 	;

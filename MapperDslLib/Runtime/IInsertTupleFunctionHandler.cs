@@ -7,6 +7,6 @@ namespace MapperDslLib.Runtime
 {
     public interface IInsertTupleFunctionHandler<T>
     {
-        void SetObject(T instanceObject, TupleSourceResult source, params object[] args);
+        void SetObject(T instanceObject, TupleSourceResult source, Parameters parameters);
     }
 }

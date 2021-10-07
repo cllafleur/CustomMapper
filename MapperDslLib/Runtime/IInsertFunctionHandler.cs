@@ -5,6 +5,6 @@ namespace MapperDslLib.Runtime
 {
     public interface IInsertFunctionHandler<T>
     {
-        void SetObject(T instanceObject, SourceResult source, params object[] args);
+        void SetObject(T instanceObject, SourceResult source, Parameters parameters);
     }
 }

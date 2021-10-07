@@ -6,5 +6,6 @@ namespace MapperDslLib.Runtime
     public class SourceResult : SourceInfo
     {
         public IEnumerable<object> Result { get; set; }
+        internal bool KeepEnumerate { get; set; }
     }
 }

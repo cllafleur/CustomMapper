@@ -11,5 +11,7 @@ namespace MapperDslLib.Runtime
             get { return (IEnumerable<TupleValues>)base.Result; }
             set { base.Result = value; }
         }
+
+        public SourceInfo[] TupleDataInfo { get; internal set; }
     }
 }
