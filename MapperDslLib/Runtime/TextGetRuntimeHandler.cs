@@ -5,16 +5,18 @@ namespace MapperDslLib.Runtime
 {
     internal class TextGetRuntimeHandler<TOrigin> : IGetRuntimeHandler<TOrigin>
     {
-        private string value;
+        private readonly string value;
+        private readonly string expressionName;
 
-        public TextGetRuntimeHandler(string value, Parser.ParsingInfo parsingInfo)
+        public TextGetRuntimeHandler(string value, Parser.ParsingInfo parsingInfo, string expressionName)
         {
             this.value = value;
+            this.expressionName = expressionName;
         }
 
         public SourceResult Get(TOrigin obj)
         {
-            var result = new SourceResult() { IsLiteral = true };
+            var result = new SourceResult() { IsLiteral = true, Name = expressionName };
             result.Result = GetResults(result);
             return result;
 

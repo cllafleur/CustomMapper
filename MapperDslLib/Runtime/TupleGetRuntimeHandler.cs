@@ -8,13 +8,15 @@ namespace MapperDslLib.Runtime
 {
     internal class TupleGetRuntimeHandler<TOrigin> : IGetRuntimeHandler<TOrigin>
     {
-        private List<IGetRuntimeHandler<TOrigin>> tupleParts;
-        private ParsingInfo parsingInfo;
+        private readonly List<IGetRuntimeHandler<TOrigin>> tupleParts;
+        private readonly ParsingInfo parsingInfo;
+        private readonly string expressionName;
 
-        public TupleGetRuntimeHandler(List<IGetRuntimeHandler<TOrigin>> tupleParts, ParsingInfo parsingInfo)
+        public TupleGetRuntimeHandler(List<IGetRuntimeHandler<TOrigin>> tupleParts, ParsingInfo parsingInfo, string expressionName)
         {
             this.tupleParts = tupleParts;
             this.parsingInfo = parsingInfo;
+            this.expressionName = expressionName;
         }
 
         public SourceResult Get(TOrigin obj)
@@ -32,6 +34,7 @@ namespace MapperDslLib.Runtime
             }
             return new TupleSourceResult()
             {
+                Name = expressionName,
                 TupleDataInfo = tupleSources.ToArray(),
                 Result = GetResults()
             };

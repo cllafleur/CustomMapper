@@ -7,15 +7,17 @@ namespace MapperDslLib.Runtime
 {
     internal class FunctionGetRuntimeHandler<TOrigin> : IGetRuntimeHandler<TOrigin>
     {
-        private IExtractFunctionHandler<TOrigin> functionHandler;
-        private IEnumerable<IGetRuntimeHandler<TOrigin>> arguments;
-        private ParsingInfo parsingInfos;
+        private readonly IExtractFunctionHandler<TOrigin> functionHandler;
+        private readonly IEnumerable<IGetRuntimeHandler<TOrigin>> arguments;
+        private readonly ParsingInfo parsingInfos;
+        private readonly string expressionName;
 
-        public FunctionGetRuntimeHandler(IExtractFunctionHandler<TOrigin> functionHandler, IEnumerable<IGetRuntimeHandler<TOrigin>> arguments, Parser.ParsingInfo parsingInfo)
+        public FunctionGetRuntimeHandler(IExtractFunctionHandler<TOrigin> functionHandler, IEnumerable<IGetRuntimeHandler<TOrigin>> arguments, Parser.ParsingInfo parsingInfo, string expressionName)
         {
             this.functionHandler = functionHandler;
             this.arguments = arguments;
             this.parsingInfos = parsingInfo;
+            this.expressionName = expressionName;
         }
 
         public SourceResult Get(TOrigin obj)
@@ -38,6 +40,7 @@ namespace MapperDslLib.Runtime
             try
             {
                 var result = functionHandler.GetObject(obj, parameters);
+                result.Name = expressionName;
                 return result;
             }
             catch (Exception exc)

@@ -7,13 +7,15 @@ namespace MapperDslLib.Runtime
 {
     internal class GetRuntimeHandler<T> : IGetRuntimeHandler<T>
     {
-        private InstanceVisitor<T> instanceVisitor;
-        private ParsingInfo parsingInfos;
+        private readonly InstanceVisitor<T> instanceVisitor;
+        private readonly ParsingInfo parsingInfos;
+        private readonly string expressionName;
 
-        public GetRuntimeHandler(InstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo)
+        public GetRuntimeHandler(InstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo, string expressionName)
         {
             this.instanceVisitor = instanceVisitor;
             this.parsingInfos = parsingInfo;
+            this.expressionName = expressionName;
         }
 
         public SourceResult Get(T obj)
@@ -22,7 +24,12 @@ namespace MapperDslLib.Runtime
             {
                 var instance = instanceVisitor.GetInstance(obj);
                 var infos = instanceVisitor.GetLastPropertyInfo();
-                return new SourceResult() { Result = instance, DataInfo = new DataSourceInfo() { PropertyInfo = infos } };
+                return new SourceResult()
+                {
+                    Name = expressionName,
+                    Result = instance,
+                    DataInfo = new DataSourceInfo() { PropertyInfo = infos }
+                };
             }
             catch (Exception exc)
             {

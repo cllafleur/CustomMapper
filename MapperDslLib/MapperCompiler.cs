@@ -34,33 +34,34 @@ namespace MapperDslLib
 
         private IGetRuntimeHandler<T> BuildGetRuntimeHandler<T>(IExpressionMapper expression)
         {
+            string expressionName = (expression as INamedExpressionMapper)?.ExpressionName;
             switch (expression)
             {
                 case InstanceRefMapper instanceRef:
                     var instanceVisitor = BuildInstanceVisitor<T>(instanceRef);
-                    return new GetRuntimeHandler<T>(instanceVisitor, instanceRef.ParsingInfo);
+                    return new GetRuntimeHandler<T>(instanceVisitor, instanceRef.ParsingInfo, expressionName);
                 case TextMapper textMapper:
-                    return new TextGetRuntimeHandler<T>(textMapper.Value, textMapper.ParsingInfo);
+                    return new TextGetRuntimeHandler<T>(textMapper.Value, textMapper.ParsingInfo, expressionName);
                 case FunctionMapper function:
-                    return BuildFunctionGetRuntimeHandler<T>(function);
+                    return BuildFunctionGetRuntimeHandler<T>(function, expressionName);
                 case TupleMapper tupleMapper:
-                    return BuildTupleGetRuntimeHandler<T>(tupleMapper);
+                    return BuildTupleGetRuntimeHandler<T>(tupleMapper, expressionName);
                 default:
                     throw new NotSupportedException($"Unknown GetRuntimeHandler : {expression}");
             }
         }
 
-        private IGetRuntimeHandler<T> BuildTupleGetRuntimeHandler<T>(TupleMapper tupleMapper)
+        private IGetRuntimeHandler<T> BuildTupleGetRuntimeHandler<T>(TupleMapper tupleMapper, string expressionName)
         {
             var tupleParts = new List<IGetRuntimeHandler<T>>();
             foreach (var part in tupleMapper.Items)
             {
                 tupleParts.Add(BuildGetRuntimeHandler<T>(part));
             }
-            return new TupleGetRuntimeHandler<T>(tupleParts, tupleMapper.ParsingInfo);
+            return new TupleGetRuntimeHandler<T>(tupleParts, tupleMapper.ParsingInfo, expressionName);
         }
 
-        private IGetRuntimeHandler<T> BuildFunctionGetRuntimeHandler<T>(FunctionMapper functionMapper)
+        private IGetRuntimeHandler<T> BuildFunctionGetRuntimeHandler<T>(FunctionMapper functionMapper, string expressionName)
         {
             List<IGetRuntimeHandler<T>> arguments = new List<IGetRuntimeHandler<T>>();
             foreach (var arg in functionMapper.Arguments)
@@ -73,7 +74,7 @@ namespace MapperDslLib
             {
                 throw new MapperRuntimeException("Function identifier not found", functionMapper.ParsingInfo);
             }
-            return new FunctionGetRuntimeHandler<T>(functionHandler, arguments, functionMapper.ParsingInfo);
+            return new FunctionGetRuntimeHandler<T>(functionHandler, arguments, functionMapper.ParsingInfo, expressionName);
         }
 
         private InstanceVisitor<T> BuildInstanceVisitor<T>(InstanceRefMapper instanceRef)

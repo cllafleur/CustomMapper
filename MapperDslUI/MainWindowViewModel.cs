@@ -253,7 +253,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
                     switch (item)
                     {
                         case Reference reference:
-                            property = new SinglePropertyItem { Id = reference.Id, Label = reference.Label };
+                            property = new SinglePropertyItem { Id = reference.Id, Label = reference.Label + source.Name ?? string.Empty };
                             break;
                         default:
                             property = new SinglePropertyItem() { Label = item.ToString() };
@@ -312,17 +312,19 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
                 CompositeProperty BuildCompositeItem(List<object> tuple)
                 {
                     CompositePropertyItem property = new CompositePropertyItem();
+                    int index = 0;
                     foreach (var item in tuple)
                     {
-                        property.Add(BuildSingleProperty(item));
+                        property.Add(BuildSingleProperty(item, index));
+                        ++index;
                     }
                     return new CompositeProperty() { Items = new List<CompositePropertyItem>() { property } };
                 }
-                SinglePropertyItem BuildSingleProperty(object obj)
+                SinglePropertyItem BuildSingleProperty(object obj, int index = 0)
                 {
                     return obj switch
                     {
-                        Reference reference => new SinglePropertyItem { Id = reference.Id, Label = reference.Label },
+                        Reference reference => new SinglePropertyItem { Id = reference.Id, Label = reference.Label + source.TupleDataInfo[index].Name ?? string.Empty },
                         _ => new SinglePropertyItem() { Label = obj?.ToString() }
                     };
                 }

@@ -25,7 +25,11 @@ complexExpr
 	;
 
 tupleOfExpr
-	: '(' expr ( ',' expr )* ')'
+	: '(' namedExpr ( ',' namedExpr )* ')'
+	;
+
+namedExpr
+	: ( IDENTIFIER ':' )? expr
 	;
 
 function
@@ -37,7 +41,7 @@ instanceRef
 	;
 
 ASSIGNMENT
-	: [-=] '>'
+	: '->' | '=>'
 	;
 
 DOT

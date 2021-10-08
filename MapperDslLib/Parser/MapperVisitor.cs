@@ -16,7 +16,6 @@
         public override object VisitFunction([NotNull] MapperParser.FunctionContext context)
         {
             var identifier = context.IDENTIFIER().GetText();
-            //var arguments = new[] { (IExpressionMapper)this.VisitExpr(context.expr()) };
             var arguments = new List<IExpressionMapper>();
             foreach (var child in context.children)
             {
@@ -41,6 +40,16 @@
                 }
             }
             return new TupleMapper(items.ToArray(), new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
+        public override object VisitNamedExpr([NotNull] MapperParser.NamedExprContext context)
+        {
+            var result = base.VisitNamedExpr(context);
+            if (result is INamedExpressionMapper namedExpression)
+            {
+                namedExpression.ExpressionName = context.IDENTIFIER()?.GetText();
+            }
+            return result;
         }
 
         public override object VisitExpr([NotNull] MapperParser.ExprContext context)

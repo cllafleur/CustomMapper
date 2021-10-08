@@ -269,5 +269,23 @@ ModificationDate -> ModificationDate
 
             Assert.That(target.Properties, Contains.Key("const1").WithValue("const1 const2"));
         }
+
+        private const string CASE8 = @"(constName1: ""const1"", constName1: ""const2"") -> AddGroupDescription(""Description"")
+";
+
+        [Test]
+        public void Map_TupleNamedValuesLiteralAndFunctionAddGroupDescription_Success()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
+            var mapper = new Mapper(functionProvider, new StringReader(CASE8));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject();
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+            handler.Map(origin, target);
+
+            Assert.That(target.Properties, Contains.Key("const1").WithValue("const1 const2"));
+        }
     }
 }
