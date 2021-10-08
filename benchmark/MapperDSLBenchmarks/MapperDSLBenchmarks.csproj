@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MapperDslLib\MapperDslLib.csproj" />
+    <ProjectReference Include="..\..\sources\MapperDslLib\MapperDslLib.csproj" />
   </ItemGroup>
 
 </Project>
