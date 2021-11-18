@@ -10,30 +10,30 @@ namespace MapperDslLib.Runtime
     {
         private static Dictionary<Type, Dictionary<string, (PropertyInfo, Type)>> cache = new Dictionary<Type, Dictionary<string, (PropertyInfo, Type)>>();
 
-        public static (PropertyInfo, Type) GetChild(Type type, string identifier)
+        public static (PropertyInfo, Type) GetChild(Type type, string identifier, IPropertyResolverHandler propertyHandler)
         {
             if (!Settings.EnableReflectionCaching)
             {
-                return GetChildType(type, identifier);
+                return GetChildType(type, identifier, propertyHandler);
             }
             (PropertyInfo, Type) result;
             if (cache.TryGetValue(type, out var typeInfo))
             {
                 if (!typeInfo.TryGetValue(identifier, out result))
                 {
-                    result = GetChildType(type, identifier);
+                    result = GetChildType(type, identifier, propertyHandler);
                     cache[type].Add(identifier, result);
                 }
             }
             else
             {
-                result = GetChildType(type, identifier);
+                result = GetChildType(type, identifier, propertyHandler);
                 cache.Add(type, new Dictionary<string, (PropertyInfo, Type)> { { identifier, result } });
             }
             return result;
         }
 
-        private static (PropertyInfo, Type) GetChildType(Type currentType, string identifier)
+        private static (PropertyInfo, Type) GetChildType(Type currentType, string identifier, IPropertyResolverHandler propertyHandler)
         {
             while (typeof(IEnumerable).IsAssignableFrom(currentType))
             {
@@ -50,14 +50,20 @@ namespace MapperDslLib.Runtime
                     break;
                 }
             }
-
-            var property = currentType.GetProperty(identifier);
-            if (property == null)
+            try
             {
-                throw new MapperVisitException($"Property '{identifier}' not found");
+                var property = propertyHandler.GetProperty(currentType, identifier);
+                if (property == null)
+                {
+                    throw new MapperVisitException($"Property '{identifier}' not found");
+                }
+                currentType = property.PropertyType;
+                return (property, currentType);
             }
-            currentType = property.PropertyType;
-            return (property, currentType);
+            catch (Exception exc)
+            {
+                throw new MapperVisitException($"Property '{identifier}' not found", exc);
+            }
         }
 
     }

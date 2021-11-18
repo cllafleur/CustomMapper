@@ -24,7 +24,7 @@ namespace MapperDslLib.Tests.Runtime
         {
             var obj = new Test1() { Text = "currentText" };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("Text");
+            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("Text", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(1));
@@ -36,7 +36,7 @@ namespace MapperDslLib.Tests.Runtime
         {
             var obj = new Test1() { List = new List<string>() { "value1", "value2" } };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List");
+            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(2));
@@ -48,7 +48,7 @@ namespace MapperDslLib.Tests.Runtime
         {
             var obj = new Test1() { List2 = new Test1[] { new Test1 { Text = "value1" }, new Test1 { Text = "value2" } } };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.Text");
+            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.Text", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(2));
@@ -66,7 +66,7 @@ namespace MapperDslLib.Tests.Runtime
                 new Test1 { List = new List<string>{ "value3", "value4" } } }
             };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List");
+            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(4));
@@ -83,7 +83,7 @@ namespace MapperDslLib.Tests.Runtime
                 new Test1 { List = null } }
             };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List");
+            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(2));

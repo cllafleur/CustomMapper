@@ -8,6 +8,7 @@
     <PackageId>$(Authors).$(AssemblyName)</PackageId>
     <PackageProjectUrl>https://github.com/cllafleur/MapperDSL</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cllafleur/MapperDSL</RepositoryUrl>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <PropertyGroup>
     <IncludeSymbols>true</IncludeSymbols>

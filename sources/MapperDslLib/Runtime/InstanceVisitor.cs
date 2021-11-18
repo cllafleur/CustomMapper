@@ -12,9 +12,12 @@ namespace MapperDslLib.Runtime
         private string value;
         private PropertyInfo[] navigation;
 
-        public InstanceVisitor(string value)
+        private IPropertyResolverHandler propertyResolverHandler;
+
+        public InstanceVisitor(string value, IPropertyResolverHandler propertyResolverHandler)
         {
             this.value = value;
+            this.propertyResolverHandler = propertyResolverHandler;
             BuildNavigation();
         }
 
@@ -101,7 +104,7 @@ namespace MapperDslLib.Runtime
             foreach (var identifier in this.value.Split('.'))
             {
                 PropertyInfo property;
-                (property, currentType) = ModelDescription.GetChild(currentType, identifier);
+                (property, currentType) = ModelDescription.GetChild(currentType, identifier, propertyResolverHandler);
                 navigation.Add(property);
             }
             this.navigation = navigation.ToArray();
