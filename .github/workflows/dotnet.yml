@@ -26,4 +26,4 @@ jobs:
     - name: Pack
       run: dotnet pack --no-restore -c Release sources/MapperDslLib/MapperDslLib.csproj
     - name: Publish
-      run: dotnet nuget push sources/MapperDslLib/bin/release/cllafleur.MapperDslLib.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} 
+      run: dotnet nuget push sources/MapperDslLib/bin/release/cllafleur.MapperDslLib.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://nuget.pkg.github.com/cllafleur/index.json
