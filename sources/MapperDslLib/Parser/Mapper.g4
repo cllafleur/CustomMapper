@@ -1,11 +1,11 @@
 ﻿grammar Mapper;
 
 file
-	: ( (WS)* NEWLINE | statement)+
+	: ( WS | WS? NEWLINE | statement)+
 	;
 
 statement
-	: extractExpr ASSIGNMENT insertExpr NEWLINE
+	: extractExpr WS? ASSIGNMENT WS? insertExpr WS? NEWLINE
 	;
 
 extractExpr
@@ -25,19 +25,19 @@ complexExpr
 	;
 
 tupleOfExpr
-	: '(' namedExpr ( ',' namedExpr )* ')'
+	: '(' namedExpr ( ',' namedExpr )* WS? ')'
 	;
 
 namedExpr
-	: ( IDENTIFIER ':' )? (returnFunctionDereferencement | expr)
+	: WS? ( IDENTIFIER WS? ':' )? WS? (returnFunctionDereferencement | expr) WS?
 	;
 
 function
-	: IDENTIFIER '(' complexExpr ( ',' complexExpr )* ')'
+	: IDENTIFIER WS? '(' WS? complexExpr ( WS? ',' WS? complexExpr )* WS? ')'
 	;
 
 returnFunctionDereferencement
-	: function('.'instanceRef)
+	: function ( '.' instanceRef )
 	;
 
 instanceRef
@@ -69,5 +69,5 @@ LINE_COMMENT
 	;
 
 WS
-	: [ \t]+ -> skip
+	: [ \t]+
 	;
