@@ -21,7 +21,7 @@ expr
 	;
 
 complexExpr
-	: ( tupleOfExpr | expr )
+	: ( tupleOfExpr | returnFunctionDereferencement | expr )
 	;
 
 tupleOfExpr
@@ -29,11 +29,15 @@ tupleOfExpr
 	;
 
 namedExpr
-	: ( IDENTIFIER ':' )? expr
+	: ( IDENTIFIER ':' )? (returnFunctionDereferencement | expr)
 	;
 
 function
 	: IDENTIFIER '(' complexExpr ( ',' complexExpr )* ')'
+	;
+
+returnFunctionDereferencement
+	: function('.'instanceRef)
 	;
 
 instanceRef

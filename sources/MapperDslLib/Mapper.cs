@@ -39,10 +39,14 @@ namespace MapperDslLib
 
             var syntaxErrorListener = new SyntaxErrorListener();
             parser.AddErrorListener(syntaxErrorListener);
-            
+
             walker.Walk(listener, parser.file());
             var data = listener.Result;
             Actions = data;
+            if (parser.NumberOfSyntaxErrors > 0)
+            {
+                throw new ParsingDefinitionException($"Syntax errors, count : {parser.NumberOfSyntaxErrors}\n\n{string.Join("\n", syntaxErrorListener.GetErrors())}");
+            }
             return (parser.NumberOfSyntaxErrors == 0, syntaxErrorListener.GetErrors());
         }
 

@@ -7,15 +7,25 @@ using System.Reflection;
 
 namespace MapperDslLib.Runtime
 {
-    public class InstanceVisitor<T>
+    public class InstanceVisitor<T> : InstanceVisitor
+    {
+        public InstanceVisitor(string value, IPropertyResolverHandler propertyResolverHandler) :
+            base(typeof(T), value, propertyResolverHandler)
+        { }
+    }
+
+    public class InstanceVisitor
     {
         private string value;
         private PropertyInfo[] navigation;
 
         private IPropertyResolverHandler propertyResolverHandler;
 
-        public InstanceVisitor(string value, IPropertyResolverHandler propertyResolverHandler)
+        private Type originType;
+
+        public InstanceVisitor(Type originType, string value, IPropertyResolverHandler propertyResolverHandler)
         {
+            this.originType = originType;
             this.value = value;
             this.propertyResolverHandler = propertyResolverHandler;
             BuildNavigation();
@@ -26,7 +36,7 @@ namespace MapperDslLib.Runtime
             return navigation[navigation.Length - 1];
         }
 
-        private IEnumerable<(object, PropertyInfo)> GetLastPropertyInstance(T obj)
+        private IEnumerable<(object, PropertyInfo)> GetLastPropertyInstance(object obj)
         {
             return Browse(obj, navigation);
         }
@@ -61,7 +71,7 @@ namespace MapperDslLib.Runtime
             }
         }
 
-        public void SetInstance(T obj, IEnumerable<object> value)
+        public void SetInstance(object obj, IEnumerable<object> value)
         {
             var (o, p) = GetLastPropertyInstance(obj).First();
             var v = value.FirstOrDefault();
@@ -73,7 +83,7 @@ namespace MapperDslLib.Runtime
             p.SetValue(o, convertedValue);
         }
 
-        public IEnumerable<object> GetInstance(T obj)
+        public IEnumerable<object> GetInstance(object obj)
         {
             foreach (var (o, p) in GetLastPropertyInstance(obj))
             {
@@ -100,7 +110,7 @@ namespace MapperDslLib.Runtime
         private void BuildNavigation()
         {
             var navigation = new List<PropertyInfo>();
-            var currentType = typeof(T);
+            var currentType = originType;
             foreach (var identifier in this.value.Split('.'))
             {
                 PropertyInfo property;

@@ -6,6 +6,8 @@ namespace MapperDslLib
     {
         T Get<T>(string identifier) where T : class;
 
+        Type GetOutputType(string identifier);
+
         void Register<T, TImplementation>(string identifier)
             where TImplementation : class, new();
 

@@ -70,5 +70,16 @@
         {
             return new InstanceRefMapper(context.GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
         }
+
+        public override object VisitReturnFunctionDereferencement([NotNull] MapperParser.ReturnFunctionDereferencementContext context)
+        {
+            var function = this.Visit(context.function()) as FunctionMapper;
+            var expressionTail = this.Visit(context.instanceRef()) as InstanceRefMapper;
+            if (function != null && expressionTail != null)
+            {
+                return new ReturnFunctionExpressionMapper(function, expressionTail, new ParsingInfo(context.Start.Line, context.GetText()));
+            }
+            return null;
+        }
     }
 }

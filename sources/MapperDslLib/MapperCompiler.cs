@@ -57,9 +57,18 @@ namespace MapperDslLib
                     return BuildFunctionGetRuntimeHandler<T>(function, expressionName);
                 case TupleMapper tupleMapper:
                     return BuildTupleGetRuntimeHandler<T>(tupleMapper, expressionName);
+                case ReturnFunctionExpressionMapper returnFunction:
+                    return BuildReturnFunctionDereferencementHandler<T>(returnFunction, expressionName);
                 default:
                     throw new NotSupportedException($"Unknown GetRuntimeHandler : {expression}");
             }
+        }
+
+        private IGetRuntimeHandler<T> BuildReturnFunctionDereferencementHandler<T>(ReturnFunctionExpressionMapper returnFunction, string expressionName)
+        {
+            IGetRuntimeHandler<T> function = BuildGetRuntimeHandler<T>(returnFunction.Function);
+            InstanceVisitor instanceVisitor = new InstanceVisitor(_functionHandlerProvider.GetOutputType(returnFunction.Function.Identifier), returnFunction.Value.Value, sourcePropertyHandler);
+            return new ReturnFunctionPropertyGetRuntimeHandler<T>(function, instanceVisitor, returnFunction.ParsingInfo, expressionName);
         }
 
         private IGetRuntimeHandler<T> BuildTupleGetRuntimeHandler<T>(TupleMapper tupleMapper, string expressionName)

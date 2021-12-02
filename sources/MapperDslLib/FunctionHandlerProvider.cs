@@ -5,28 +5,46 @@ namespace MapperDslLib
 {
     public class FunctionHandlerProvider : IFunctionHandlerProvider
     {
-        private Dictionary<string, Type> registeredTypes = new Dictionary<string, Type>();
+        private Dictionary<string, FunctionHandlerDescription> registeredTypes = new Dictionary<string, FunctionHandlerDescription>();
 
         public T Get<T>(string identifier)
             where T : class
         {
-            var type = registeredTypes.ContainsKey(identifier) ? registeredTypes[identifier] : null;
-            if (type == null)
+            var description = registeredTypes.ContainsKey(identifier) ? registeredTypes[identifier] : null;
+            if (description == null)
             {
                 return null;
             }
-            return (T)type.GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>());
+            return (T)description.FunctionHandlerType.GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>());
+        }
+
+        public Type GetOutputType(string identifier)
+        {
+            var description = registeredTypes.ContainsKey(identifier) ? registeredTypes[identifier] : null;
+            if (description == null)
+            {
+                return null;
+            }
+            return description.OutputType;
         }
 
         public void Register<T, TImplementation>(string identifier)
             where TImplementation : class, new()
         {
-            registeredTypes.Add(identifier, typeof(TImplementation));
+            var description = GetDescription(typeof(TImplementation));
+            registeredTypes.Add(identifier, description);
         }
 
         public void Register<T>(string identifier, Type implementationType)
         {
-            registeredTypes.Add(identifier, implementationType);
+            var description = GetDescription(implementationType);
+            registeredTypes.Add(identifier, description);
+        }
+
+        private FunctionHandlerDescription GetDescription(Type functionHandlerType)
+        {
+            var outputType = functionHandlerType.GetCustomAttributes(typeof(OutputTypeAttribute), false).Cast<OutputTypeAttribute>().FirstOrDefault()?.OutputType;
+            return new FunctionHandlerDescription(functionHandlerType, outputType);
         }
     }
 }
