@@ -29,6 +29,19 @@ JobDescription.Description1 -> JobAdDetails.MissionDescription
 JobDescription.Description2 -> JobAdDetails.ProfileDescription
 Organisation -> AddProperty(""Organisation"")
 JobDescription.Country -> AddProperty(""Country"")
+JobDescription.ContractType -> AddProperty(""ContractType"")
+Criteria.CriteriaCustomFields.LongText1 -> AddProperty(""InternalInformations"") # c'est un commentaire !
+ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
+";
+
+        private const string DEFAULT_DEFINITION_bak = @"
+GenerateId(Reference) -> Reference
+Reference -> AddProperty(""OfferReference"")
+JobDescription.JobTitle -> JobAdDetails.Title
+JobDescription.Description1 -> JobAdDetails.MissionDescription
+JobDescription.Description2 -> JobAdDetails.ProfileDescription
+Organisation -> AddProperty(""Organisation"")
+JobDescription.Country -> AddProperty(""Country"")
 JobDescription.JobDescriptionCustomFields.CustomCodeTable1.Label -> Location.Address
 ""42.90"" -> Location.Coordinates.Longitude
 ""-44.967"" -> Location.Coordinates.Latitude
@@ -36,6 +49,7 @@ JobDescription.ContractType -> AddProperty(""ContractType"")
 Criteria.CriteriaCustomFields.LongText1 -> AddProperty(""InternalInformations"") # c'est un commentaire !
 ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 ";
+
         private VacancyDetailRead origin;
 
         public MapperBenchmark()
@@ -46,6 +60,9 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
         [Params(100, 1000, 10000)]
         public long IterationNumber { get; set; } = 100000000;
 
+        [Params(CompileOption.Reflection, CompileOption.CSharp)]
+        public CompileOption Option {  get; set; }
+
         [Benchmark]
         public void FirstBench()
         {
@@ -55,7 +72,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
             var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
-            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>();
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(Option);
             for (int i = 0; i < IterationNumber; i++)
             {
                 var target = ModelBuilder.GetNewJobAd();
@@ -72,16 +89,6 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             }
         }
 
-        [Benchmark]
-        public void SecondBenchWithCache()
-        {
-            Settings.EnableReflectionCaching = true;
-            for (int i = 0; i < IterationNumber; i++)
-            {
-                BlockToTest();
-            }
-        }
-
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void BlockToTest()
         {
@@ -91,7 +98,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
             var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
-            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>();
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(Option);
             var target = ModelBuilder.GetNewJobAd();
             mapperHandler.Map(origin, target);
         }

@@ -6,10 +6,10 @@ namespace MapperDslLib.Runtime
 {
     internal class SetRuntimeHandler<T> : ISetRuntimeHandler<T>
     {
-        private InstanceVisitor<T> instanceVisitor;
+        private ISetInstanceVisitor<T> instanceVisitor;
         private ParsingInfo parsingInfos;
 
-        public SetRuntimeHandler(InstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo)
+        public SetRuntimeHandler(ISetInstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo)
         {
             this.instanceVisitor = instanceVisitor;
             this.parsingInfos = parsingInfo;

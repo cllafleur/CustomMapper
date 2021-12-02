@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MapperDSLBenchmarks.Models
 {
-    class ExtractRef : IExtractFunctionHandler<VacancyDetailRead>
+    public class ExtractRef : IExtractFunctionHandler<VacancyDetailRead>
     {
         public SourceResult GetObject(VacancyDetailRead instanceObj, Parameters parameters)
         {
@@ -30,7 +30,7 @@ namespace MapperDSLBenchmarks.Models
         }
     }
 
-    class GenerateId : IExtractFunctionHandler<VacancyDetailRead>
+    public class GenerateId : IExtractFunctionHandler<VacancyDetailRead>
     {
         public SourceResult GetObject(VacancyDetailRead instanceObj, Parameters parameters)
         {
@@ -47,7 +47,7 @@ namespace MapperDSLBenchmarks.Models
         }
     }
 
-    class AddProperty : IInsertFunctionHandler<JobAd>, IInsertTupleFunctionHandler<JobAd>
+    public class AddProperty : IInsertFunctionHandler<JobAd>, IInsertTupleFunctionHandler<JobAd>
     {
         public void SetObject(JobAd instanceObject, SourceResult source, Parameters parameters)
         {

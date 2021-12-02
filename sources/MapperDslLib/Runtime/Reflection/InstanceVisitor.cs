@@ -5,9 +5,9 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace MapperDslLib.Runtime
+namespace MapperDslLib.Runtime.Reflection
 {
-    public class InstanceVisitor<T>
+    public class InstanceVisitor<T> : IGetInstanceVisitor<T>, ISetInstanceVisitor<T>
     {
         private string value;
         private PropertyInfo[] navigation;
@@ -106,6 +106,5 @@ namespace MapperDslLib.Runtime
             }
             this.navigation = navigation.ToArray();
         }
-
     }
 }

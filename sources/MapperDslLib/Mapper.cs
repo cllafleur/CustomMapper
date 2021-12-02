@@ -46,9 +46,9 @@ namespace MapperDslLib
             return (parser.NumberOfSyntaxErrors == 0, syntaxErrorListener.GetErrors());
         }
 
-        public IMapperHandler<TOrigin, TTarget> GetMapper<TOrigin, TTarget>()
+        public IMapperHandler<TOrigin, TTarget> GetMapper<TOrigin, TTarget>(CompileOption option = CompileOption.Reflection)
         {
-            var compiler = new MapperCompiler<TOrigin, TTarget>(_functionHandlerProvider);
+            var compiler = new MapperCompiler<TOrigin, TTarget>(_functionHandlerProvider, option);
             var handler = compiler.Compile(Actions);
             return handler;
         }

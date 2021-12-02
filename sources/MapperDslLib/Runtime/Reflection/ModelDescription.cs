@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace MapperDslLib.Runtime
+namespace MapperDslLib.Runtime.Reflection
 {
     internal class ModelDescription
     {
