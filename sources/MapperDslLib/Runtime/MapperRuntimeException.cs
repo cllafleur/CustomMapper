@@ -28,7 +28,7 @@ namespace MapperDslLib.Runtime
         {
         }
 
-        public MapperRuntimeException(string message, ParsingInfo parsingInfos, Exception innerException) : this(message, innerException)
+        public MapperRuntimeException(string message, ParsingInfo parsingInfos, Exception innerException) : this($"{message}\nLine: {parsingInfos.Line} Expression: '{parsingInfos.Text}'", innerException)
         {
             this.parsingInfos = parsingInfos;
         }

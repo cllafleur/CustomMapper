@@ -34,7 +34,7 @@ namespace MapperDslLib.Runtime
                 }
                 parameters.Values = values.ToArray();
             }
-            catch (Exception exc)
+            catch (Exception exc) when (exc is not MapperRuntimeException)
             {
                 throw new MapperRuntimeException("Failed to get parameters", parsingInfos, exc);
             }
@@ -49,7 +49,7 @@ namespace MapperDslLib.Runtime
                     insertFunctionHandler.SetObject(obj, value, parameters);
                 }
             }
-            catch (Exception exc)
+            catch (Exception exc) when (exc is not MapperRuntimeException)
             {
                 throw new MapperRuntimeException("Failed to call function", parsingInfos, exc);
             }

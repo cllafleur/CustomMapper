@@ -21,7 +21,7 @@ namespace MapperDslLib.Runtime
             {
                 instanceVisitor.SetInstance(obj, value.Result);
             }
-            catch (Exception exc)
+            catch (Exception exc) when (exc is not MapperRuntimeException)
             {
                 throw new MapperRuntimeException("Failed to set property", parsingInfos, exc);
             }

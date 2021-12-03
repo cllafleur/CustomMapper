@@ -19,29 +19,43 @@ internal class ReturnFunctionPropertyGetRuntimeHandler<T> : IGetRuntimeHandler<T
 
     public SourceResult Get(T obj)
     {
-        try
+        var infos = instanceVisitor.GetLastPropertyInfo();
+        var result = GetResult(obj);
+        return new SourceResult()
         {
-            var infos = instanceVisitor.GetLastPropertyInfo();
-            var result = GetResult(obj);
-            return new SourceResult()
-            {
-                Name = expressionName,
-                Result = result,
-                DataInfo = new DataSourceInfo() { PropertyInfo = infos }
-            };
-        }
-        catch (Exception exc)
-        {
-            throw new MapperRuntimeException("Failed to get property", parsingInfo, exc);
-        }
+            Name = expressionName,
+            Result = result,
+            DataInfo = new DataSourceInfo() { PropertyInfo = infos }
+        };
 
         IEnumerable<object> GetResult(T obj)
         {
             foreach (var funcResult in function.Get(obj).Result)
             {
-                foreach (var result in instanceVisitor.GetInstance(funcResult))
+                bool @continue = false;
+                var enumerator = instanceVisitor.GetInstance(funcResult).GetEnumerator();
+
+                try
                 {
+                    @continue = enumerator.MoveNext();
+                }
+                catch (Exception exc) when (exc is not MapperRuntimeException)
+                {
+                    throw new MapperRuntimeException("Failed to get property", parsingInfo, exc);
+                }
+                while (@continue)
+                {
+                    object result;
+                    result = enumerator.Current;
                     yield return result;
+                    try
+                    {
+                        @continue = enumerator.MoveNext();
+                    }
+                    catch (Exception exc) when (exc is not MapperRuntimeException)
+                    {
+                        throw new MapperRuntimeException("Failed to get property", parsingInfo, exc);
+                    }
                 }
             }
         }

@@ -31,7 +31,7 @@ namespace MapperDslLib.Runtime
                     DataInfo = new DataSourceInfo() { PropertyInfo = infos }
                 };
             }
-            catch (Exception exc)
+            catch (Exception exc) when (exc is not MapperRuntimeException)
             {
                 throw new MapperRuntimeException("Failed to get property", parsingInfos, exc);
             }

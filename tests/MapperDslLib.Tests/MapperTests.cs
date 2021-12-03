@@ -298,7 +298,7 @@ GetRef(""test"").Description2 -> Description.Description2
             {
                 return new SourceResult()
                 {
-                    Result = new[] { 
+                    Result = new[] {
                         null,
                         new DescriptionObject() { Description = "result", Description2 = "result2" },
                     },
@@ -320,6 +320,34 @@ GetRef(""test"").Description2 -> Description.Description2
 
             Assert.That(target.Description.Description, Is.EqualTo("result"));
             Assert.That(target.Description.Description2, Is.EqualTo("result2"));
+        }
+
+        [OutputType(typeof(DescriptionObject))]
+        class GetRef2 : IExtractFunctionHandler<OriginObject>
+        {
+            public virtual SourceResult GetObject(OriginObject instanceObj, Parameters parameters)
+            {
+                return new SourceResult()
+                {
+                    Result = new object[] {
+                        new OriginObject(),
+                    },
+                };
+            }
+        }
+
+        [Test]
+        public void Map_FunctionDereferencement_FailedWithException()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IExtractFunctionHandler<OriginObject>, GetRef2>(nameof(GetRef));
+            var mapper = new Mapper(functionProvider, new StringReader(CASE9));
+            mapper.Load();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var origin = new OriginObject();
+            var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
+
+            Assert.Throws<MapperRuntimeException>(() => handler.Map(origin, target));
         }
     }
 }
