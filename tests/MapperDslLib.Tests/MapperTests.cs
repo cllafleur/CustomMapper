@@ -48,7 +48,7 @@ ModificationDate -> ModificationDate
         {
             public DescriptionObject Description { get; set; }
 
-            public DateTime ModificationDate { get; set; }
+            public DateTime? ModificationDate { get; set; }
 
             public Dictionary<string, string> Properties { get; set; }
         }

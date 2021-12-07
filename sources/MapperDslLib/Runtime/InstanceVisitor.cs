@@ -79,7 +79,16 @@ namespace MapperDslLib.Runtime
             {
                 v = values.FirstOrDefault();
             }
-            var convertedValue = value == null ? null : Convert.ChangeType(v, p.PropertyType, CultureInfo.InvariantCulture);
+            object convertedValue = null;
+            Type innerType = Nullable.GetUnderlyingType(p.PropertyType);
+            if (innerType != null && innerType == v.GetType())
+            {
+                convertedValue = v;
+            }
+            else
+            {
+                convertedValue = value == null ? null : Convert.ChangeType(v, p.PropertyType, CultureInfo.InvariantCulture);
+            }
             p.SetValue(o, convertedValue);
         }
 
