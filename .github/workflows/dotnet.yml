@@ -3,8 +3,12 @@ name: .NET
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'sources/MapperDslLib/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'sources/MapperDslLib/**'
 
 jobs:
   build:

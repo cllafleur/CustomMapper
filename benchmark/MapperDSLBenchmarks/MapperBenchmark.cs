@@ -13,11 +13,13 @@ using MapperDslUI.Models;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using System.Runtime.CompilerServices;
+using MapperDslUI.Models.Target.Properties;
 
 namespace MapperDSLBenchmarks
 {
     [SimpleJob(RuntimeMoniker.Net48)]
     [SimpleJob(RuntimeMoniker.Net50)]
+    [SimpleJob(RuntimeMoniker.Net60)]
     [MemoryDiagnoser]
     public class MapperBenchmark
     {
@@ -36,6 +38,23 @@ JobDescription.ContractType -> AddProperty(""ContractType"")
 Criteria.CriteriaCustomFields.LongText1 -> AddProperty(""InternalInformations"") # c'est un commentaire !
 ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
 ";
+        private void DoStaticMap(VacancyDetailRead origin, JobAd target)
+        {
+            target.Reference = origin.Reference;
+            target.Properties.Add("OfferReference", new SingleProperty() { Items = new List<SinglePropertyItem>() { new SinglePropertyItem { Label = origin.Reference } } });
+            target.JobAdDetails.Title = origin.JobDescription.JobTitle;
+            target.JobAdDetails.MissionDescription = origin.JobDescription.Description1;
+            target.JobAdDetails.ProfileDescription = origin.JobDescription.Description2;
+            target.Properties.Add("Organisation", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Id = origin.Organisation.Id, Label = origin.Organisation.Label } } });
+            target.Properties.Add("Country", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Id = origin.JobDescription.Country.Id, Label = origin.JobDescription.Country.Label } } });
+            target.Location.Address = origin.JobDescription.JobDescriptionCustomFields.CustomCodeTable1.Label;
+            target.Location.Coordinates.Latitude = 42.90;
+            target.Location.Coordinates.Longitude = -44.967;
+            target.Properties.Add("ContractType", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Id = origin.JobDescription.ContractType.Id, Label = origin.JobDescription.ContractType.Label } } });
+            target.Properties.Add("InternalInformations", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Label = origin.Criteria.CriteriaCustomFields.LongText1 } } });
+            target.Properties.Add("CreationDate", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Label = origin.CreationDate.ToString() } } });
+        }
+
         private VacancyDetailRead origin;
 
         public MapperBenchmark()
@@ -43,11 +62,11 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             origin = ModelBuilder.GetNewVacancyDetailRead();
         }
 
-        [Params(100, 1000, 10000)]
+        [Params(100, 1000/*, 10000*/)]
         public long IterationNumber { get; set; } = 100000000;
 
         [Benchmark]
-        public void FirstBench()
+        public void BuildOnce()
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
@@ -64,7 +83,17 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
         }
 
         [Benchmark]
-        public void SecondBench()
+        public void StaticMap()
+        {
+            for (int i = 0; i < IterationNumber; i++)
+            {
+                var target = ModelBuilder.GetNewJobAd();
+                DoStaticMap(origin, target);
+            }
+        }
+
+        [Benchmark]
+        public void BuildEachTime()
         {
             for (int i = 0; i < IterationNumber; i++)
             {
@@ -73,7 +102,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
         }
 
         [Benchmark]
-        public void SecondBenchWithCache()
+        public void BuildEachTimeWithCache()
         {
             Settings.EnableReflectionCaching = true;
             for (int i = 0; i < IterationNumber; i++)
