@@ -1,4 +1,5 @@
 ﻿using MapperDslLib.Parser;
+using MapperDslLib.Runtime.Accessor;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -7,11 +8,11 @@ namespace MapperDslLib.Runtime
 {
     internal class GetRuntimeHandler<T> : IGetRuntimeHandler<T>
     {
-        private readonly InstanceVisitor<T> instanceVisitor;
+        private readonly IInstanceVisitor<T> instanceVisitor;
         private readonly ParsingInfo parsingInfos;
         private readonly string expressionName;
 
-        public GetRuntimeHandler(InstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo, string expressionName)
+        public GetRuntimeHandler(IInstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo, string expressionName)
         {
             this.instanceVisitor = instanceVisitor;
             this.parsingInfos = parsingInfo;

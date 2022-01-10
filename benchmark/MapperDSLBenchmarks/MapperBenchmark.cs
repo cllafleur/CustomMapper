@@ -62,7 +62,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             origin = ModelBuilder.GetNewVacancyDetailRead();
         }
 
-        [Params(100, 1000/*, 10000*/)]
+        [Params(100/*, 1000, 10000*/)]
         public long IterationNumber { get; set; } = 100000000;
 
         [Benchmark]

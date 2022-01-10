@@ -1,5 +1,6 @@
 ﻿using MapperDslLib.Parser;
 using MapperDslLib.Runtime;
+using MapperDslLib.Runtime.Accessor;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -67,7 +68,7 @@ namespace MapperDslLib
         private IGetRuntimeHandler<T> BuildReturnFunctionDereferencementHandler<T>(ReturnFunctionExpressionMapper returnFunction, string expressionName)
         {
             IGetRuntimeHandler<T> function = BuildGetRuntimeHandler<T>(returnFunction.Function);
-            InstanceVisitor instanceVisitor = new InstanceVisitor(_functionHandlerProvider.GetOutputType(returnFunction.Function.Identifier), returnFunction.Value.Value, sourcePropertyHandler);
+            IInstanceVisitor instanceVisitor = new InstanceVisitor(_functionHandlerProvider.GetOutputType(returnFunction.Function.Identifier), returnFunction.Value.Value, sourcePropertyHandler);
             return new ReturnFunctionPropertyGetRuntimeHandler<T>(function, instanceVisitor, returnFunction.ParsingInfo, expressionName);
         }
 
@@ -97,7 +98,7 @@ namespace MapperDslLib
             return new FunctionGetRuntimeHandler<T>(functionHandler, arguments, functionMapper.ParsingInfo, expressionName);
         }
 
-        private InstanceVisitor<T> BuildInstanceVisitor<T>(InstanceRefMapper instanceRef, IPropertyResolverHandler propertyResolver)
+        private IInstanceVisitor<T> BuildInstanceVisitor<T>(InstanceRefMapper instanceRef, IPropertyResolverHandler propertyResolver)
         {
             try
             {

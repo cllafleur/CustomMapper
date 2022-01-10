@@ -1,4 +1,5 @@
 ﻿using MapperDslLib.Runtime;
+using MapperDslLib.Runtime.Accessor;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,17 @@ namespace MapperDslLib.Tests.Runtime
             public Test1[] List2 { get; set; }
         }
 
+        class Test2
+        {
+            public Dictionary<string, string> Dic { get; set; } = new Dictionary<string,string>();
+        }
+
         [Test]
         public void InstanceVisitorGetInstance_ToGetScalarValue()
         {
             var obj = new Test1() { Text = "currentText" };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("Text", DefaultPropertyResolverHandler.Instance);
+            IInstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("Text", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(1));
@@ -36,7 +42,7 @@ namespace MapperDslLib.Tests.Runtime
         {
             var obj = new Test1() { List = new List<string>() { "value1", "value2" } };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List", DefaultPropertyResolverHandler.Instance);
+            IInstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(2));
@@ -48,7 +54,7 @@ namespace MapperDslLib.Tests.Runtime
         {
             var obj = new Test1() { List2 = new Test1[] { new Test1 { Text = "value1" }, new Test1 { Text = "value2" } } };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.Text", DefaultPropertyResolverHandler.Instance);
+            IInstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.Text", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(2));
@@ -66,7 +72,7 @@ namespace MapperDslLib.Tests.Runtime
                 new Test1 { List = new List<string>{ "value3", "value4" } } }
             };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List", DefaultPropertyResolverHandler.Instance);
+            IInstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(4));
@@ -83,11 +89,23 @@ namespace MapperDslLib.Tests.Runtime
                 new Test1 { List = null } }
             };
 
-            InstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List", DefaultPropertyResolverHandler.Instance);
+            IInstanceVisitor<Test1> visitor = new InstanceVisitor<Test1>("List2.List", DefaultPropertyResolverHandler.Instance);
             var result = visitor.GetInstance(obj);
 
             Assert.That(result.Count(), Is.EqualTo(2));
             Assert.That(result, Is.EqualTo(new[] { "value1", "value2" }));
+        }
+
+        [Test]
+        public void InstanceVisitorGetInstance_RetrievePropertiesFromDictionary()
+        {
+            var obj = new Test2() { Dic = { { "key1", "val1" } } };
+
+            IInstanceVisitor<Test2> visitor = new InstanceVisitor<Test2>("Dic.key1", DefaultPropertyResolverHandler.Instance);
+            var result = visitor.GetInstance(obj);
+
+            Assert.That(result.Count(), Is.EqualTo(1));
+            Assert.That(result, Is.EqualTo(new[] { "val1" }));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MapperDslLib.Parser;
+using MapperDslLib.Runtime.Accessor;
 using System;
 using System.Collections.Generic;
 
@@ -6,10 +7,10 @@ namespace MapperDslLib.Runtime
 {
     internal class SetRuntimeHandler<T> : ISetRuntimeHandler<T>
     {
-        private InstanceVisitor<T> instanceVisitor;
+        private IInstanceVisitor<T> instanceVisitor;
         private ParsingInfo parsingInfos;
 
-        public SetRuntimeHandler(InstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo)
+        public SetRuntimeHandler(IInstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo)
         {
             this.instanceVisitor = instanceVisitor;
             this.parsingInfos = parsingInfo;

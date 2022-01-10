@@ -1,15 +1,16 @@
 ﻿using MapperDslLib.Parser;
+using MapperDslLib.Runtime.Accessor;
 
 namespace MapperDslLib.Runtime;
 
 internal class ReturnFunctionPropertyGetRuntimeHandler<T> : IGetRuntimeHandler<T>
 {
     private IGetRuntimeHandler<T> function;
-    private InstanceVisitor instanceVisitor;
+    private IInstanceVisitor instanceVisitor;
     private ParsingInfo parsingInfo;
     private string expressionName;
 
-    public ReturnFunctionPropertyGetRuntimeHandler(IGetRuntimeHandler<T> function, InstanceVisitor instanceVisitor, ParsingInfo parsingInfo, string expressionName)
+    public ReturnFunctionPropertyGetRuntimeHandler(IGetRuntimeHandler<T> function, IInstanceVisitor instanceVisitor, ParsingInfo parsingInfo, string expressionName)
     {
         this.function = function;
         this.instanceVisitor = instanceVisitor;
