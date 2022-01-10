@@ -109,12 +109,21 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             }
         }
 
-        //[Benchmark]
-        public void BuildEachTime()
+        [Benchmark]
+        public void BuildEachTimeV1()
         {
             for (int i = 0; i < IterationNumber; i++)
             {
-                BlockToTest();
+                BlockToTest(CompileOption.v1);
+            }
+        }
+
+        [Benchmark]
+        public void BuildEachTimeV2()
+        {
+            for (int i = 0; i < IterationNumber; i++)
+            {
+                BlockToTest(CompileOption.v2);
             }
         }
 
@@ -124,12 +133,12 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             Settings.EnableReflectionCaching = true;
             for (int i = 0; i < IterationNumber; i++)
             {
-                BlockToTest();
+                BlockToTest(CompileOption.v1);
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void BlockToTest()
+        private void BlockToTest(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
@@ -137,7 +146,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
             var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
-            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>();
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(option);
             var target = ModelBuilder.GetNewJobAd();
             mapperHandler.Map(origin, target);
         }
@@ -147,7 +156,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
         {
             Parallel.For(0L, IterationNumber, new ParallelOptions() { MaxDegreeOfParallelism = 20 }, (i) =>
              {
-                 BlockToTest();
+                 BlockToTest(CompileOption.v1);
              });
         }
     }
