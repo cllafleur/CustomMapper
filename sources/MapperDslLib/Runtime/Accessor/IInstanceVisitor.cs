@@ -7,7 +7,6 @@ namespace MapperDslLib.Runtime.Accessor
 {
     public interface IInstanceVisitor: IGetterAccessor, ISetterAccessor
     {
-        PropertyInfo GetLastPropertyInfo();
     }
 
     public interface IInstanceVisitor<T> : IInstanceVisitor

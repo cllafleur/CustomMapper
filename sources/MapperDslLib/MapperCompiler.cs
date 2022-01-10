@@ -10,19 +10,22 @@ namespace MapperDslLib
     public class MapperCompiler<TOrigin, TTarget>
     {
         private IFunctionHandlerProvider _functionHandlerProvider;
+        private readonly CompileOption option;
         private readonly IPropertyResolverHandler sourcePropertyHandler;
         private readonly IPropertyResolverHandler targetPropertyHandler;
 
-        public MapperCompiler(IFunctionHandlerProvider functionHandlerProvider) 
-            : this(functionHandlerProvider, null, null)
+        public MapperCompiler(IFunctionHandlerProvider functionHandlerProvider, CompileOption option)
+            : this(functionHandlerProvider, option, null, null)
         {
         }
 
         public MapperCompiler(IFunctionHandlerProvider functionHandlerProvider,
+             CompileOption option,
              IPropertyResolverHandler sourcePropertyHandler = null,
              IPropertyResolverHandler targetPropertyHandler = null)
         {
             _functionHandlerProvider = functionHandlerProvider;
+            this.option = option;
             this.sourcePropertyHandler = sourcePropertyHandler ?? DefaultPropertyResolverHandler.Instance;
             this.targetPropertyHandler = targetPropertyHandler ?? DefaultPropertyResolverHandler.Instance;
         }
@@ -50,7 +53,15 @@ namespace MapperDslLib
             switch (expression)
             {
                 case InstanceRefMapper instanceRef:
-                    var instanceVisitor = BuildInstanceVisitor<T>(instanceRef, sourcePropertyHandler);
+                    IGetterAccessor instanceVisitor;
+                    if (option == CompileOption.v2)
+                    {
+                        instanceVisitor = BuildGetInstanceVisitor<T>(instanceRef, sourcePropertyHandler);
+                    }
+                    else
+                    {
+                        instanceVisitor = BuildInstanceVisitor<T>(instanceRef, sourcePropertyHandler);
+                    }
                     return new GetRuntimeHandler<T>(instanceVisitor, instanceRef.ParsingInfo, expressionName);
                 case TextMapper textMapper:
                     return new TextGetRuntimeHandler<T>(textMapper.Value, textMapper.ParsingInfo, expressionName);
@@ -68,7 +79,16 @@ namespace MapperDslLib
         private IGetRuntimeHandler<T> BuildReturnFunctionDereferencementHandler<T>(ReturnFunctionExpressionMapper returnFunction, string expressionName)
         {
             IGetRuntimeHandler<T> function = BuildGetRuntimeHandler<T>(returnFunction.Function);
-            IInstanceVisitor instanceVisitor = new InstanceVisitor(_functionHandlerProvider.GetOutputType(returnFunction.Function.Identifier), returnFunction.Value.Value, sourcePropertyHandler);
+            IGetterAccessor instanceVisitor;
+            var outputType = _functionHandlerProvider.GetOutputType(returnFunction.Function.Identifier);
+            if (option == CompileOption.v2)
+            {
+                instanceVisitor = InstanceVisitorBuilder.GetGetterAccessor(outputType, returnFunction.Value.Children, sourcePropertyHandler);
+            }
+            else
+            {
+                instanceVisitor = new InstanceVisitor(outputType, returnFunction.Value.GetLitteral(), sourcePropertyHandler);
+            }
             return new ReturnFunctionPropertyGetRuntimeHandler<T>(function, instanceVisitor, returnFunction.ParsingInfo, expressionName);
         }
 
@@ -98,11 +118,23 @@ namespace MapperDslLib
             return new FunctionGetRuntimeHandler<T>(functionHandler, arguments, functionMapper.ParsingInfo, expressionName);
         }
 
+        private IGetterAccessor BuildGetInstanceVisitor<T>(InstanceRefMapper instanceRef, IPropertyResolverHandler propertyResolver)
+        {
+            try
+            {
+                return InstanceVisitorBuilder.GetGetterAccessor<T>(instanceRef.Children, propertyResolver);
+            }
+            catch (Exception exc)
+            {
+                throw new MapperRuntimeException(exc.Message, instanceRef.ParsingInfo, exc);
+            }
+        }
+
         private IInstanceVisitor<T> BuildInstanceVisitor<T>(InstanceRefMapper instanceRef, IPropertyResolverHandler propertyResolver)
         {
             try
             {
-                return new InstanceVisitor<T>(instanceRef.Value, propertyResolver);
+                return new InstanceVisitor<T>(instanceRef.GetLitteral(), propertyResolver);
             }
             catch (Exception exc)
             {

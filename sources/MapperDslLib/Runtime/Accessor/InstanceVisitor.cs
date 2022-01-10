@@ -31,7 +31,7 @@ public class InstanceVisitor : IInstanceVisitor
         BuildNavigation();
     }
 
-    public PropertyInfo GetLastPropertyInfo()
+    public PropertyInfo GetPropertyInfo()
     {
         return navigation[navigation.Length - 1];
     }
@@ -129,4 +129,8 @@ public class InstanceVisitor : IInstanceVisitor
         this.navigation = navigation.ToArray();
     }
 
+    public void AddNext(IGetterAccessor getter)
+    {
+        throw new NotImplementedException();
+    }
 }

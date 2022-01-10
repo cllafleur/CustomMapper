@@ -6,11 +6,11 @@ namespace MapperDslLib.Runtime;
 internal class ReturnFunctionPropertyGetRuntimeHandler<T> : IGetRuntimeHandler<T>
 {
     private IGetRuntimeHandler<T> function;
-    private IInstanceVisitor instanceVisitor;
+    private IGetterAccessor instanceVisitor;
     private ParsingInfo parsingInfo;
     private string expressionName;
 
-    public ReturnFunctionPropertyGetRuntimeHandler(IGetRuntimeHandler<T> function, IInstanceVisitor instanceVisitor, ParsingInfo parsingInfo, string expressionName)
+    public ReturnFunctionPropertyGetRuntimeHandler(IGetRuntimeHandler<T> function, IGetterAccessor instanceVisitor, ParsingInfo parsingInfo, string expressionName)
     {
         this.function = function;
         this.instanceVisitor = instanceVisitor;
@@ -20,7 +20,7 @@ internal class ReturnFunctionPropertyGetRuntimeHandler<T> : IGetRuntimeHandler<T
 
     public SourceResult Get(T obj)
     {
-        var infos = instanceVisitor.GetLastPropertyInfo();
+        var infos = instanceVisitor.GetPropertyInfo();
         var result = GetResult(obj);
         return new SourceResult()
         {

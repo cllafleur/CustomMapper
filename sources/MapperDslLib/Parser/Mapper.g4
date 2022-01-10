@@ -41,7 +41,11 @@ returnFunctionDereferencement
 	;
 
 instanceRef
-	: IDENTIFIER (DOT IDENTIFIER)*
+	: fieldInstanceRef (DOT fieldInstanceRef)*
+	;
+
+fieldInstanceRef
+	: IDENTIFIER
 	;
 
 ASSIGNMENT

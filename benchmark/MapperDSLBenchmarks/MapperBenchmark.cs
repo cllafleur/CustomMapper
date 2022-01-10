@@ -66,7 +66,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
         public long IterationNumber { get; set; } = 100000000;
 
         [Benchmark]
-        public void BuildOnce()
+        public void BuildOnceV1()
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
@@ -74,7 +74,24 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
             var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
-            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>();
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(CompileOption.v1);
+            for (int i = 0; i < IterationNumber; i++)
+            {
+                var target = ModelBuilder.GetNewJobAd();
+                mapperHandler.Map(origin, target);
+            }
+        }
+
+        [Benchmark]
+        public void BuildOnceV2()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
+            functionProvider.Register<IInsertFunctionHandler<JobAd>, AddProperty>("AddProperty");
+            functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
+            var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
+            var (success, errors) = mapper.Load();
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(CompileOption.v2);
             for (int i = 0; i < IterationNumber; i++)
             {
                 var target = ModelBuilder.GetNewJobAd();
@@ -92,7 +109,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             }
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void BuildEachTime()
         {
             for (int i = 0; i < IterationNumber; i++)
@@ -101,7 +118,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             }
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void BuildEachTimeWithCache()
         {
             Settings.EnableReflectionCaching = true;

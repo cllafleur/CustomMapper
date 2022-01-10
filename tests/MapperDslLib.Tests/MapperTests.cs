@@ -80,12 +80,13 @@ ModificationDate -> ModificationDate
             }
         }
 
-        [Test]
-        public void Map_ScalarProperties_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_ScalarProperties_Success(CompileOption option)
         {
             var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(CASE1));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject()
             {
                 Title = "supertitle",
@@ -100,15 +101,16 @@ ModificationDate -> ModificationDate
             Assert.AreEqual(origin.Description, target.Description.Description);
         }
 
-        [Test]
-        public void Map_ScalarAndFunctionProperties_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_ScalarAndFunctionProperties_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<OriginObject>, ExtractRef>("ExtractRef");
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddProperty>("AddProperty");
             var mapper = new Mapper(functionProvider, new StringReader(CASE2));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject()
             {
                 Title = "supertitle",
@@ -124,15 +126,16 @@ ModificationDate -> ModificationDate
             Assert.That(target.Properties, Contains.Key("contractType").WithValue("superdescription__new"));
         }
 
-        [Test]
-        public void Map_ScalarAndFunctionPropertiesWithTuple_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_ScalarAndFunctionPropertiesWithTuple_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<OriginObject>, ExtractRef>("ExtractRef");
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddProperty>("AddProperty");
             var mapper = new Mapper(functionProvider, new StringReader(CASE3));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject()
             {
                 Title = "supertitle",
@@ -167,14 +170,15 @@ ModificationDate -> ModificationDate
             }
         }
 
-        [Test]
-        public void Map_TwoTupleValuesAndFunctionAddGroupDescription_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_TwoTupleValuesAndFunctionAddGroupDescription_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
             var mapper = new Mapper(functionProvider, new StringReader(CASE4));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject()
             {
                 Items = new List<DescriptionObject> { new DescriptionObject() { Description = "Description", Description2 = "Description2" } }
@@ -185,14 +189,15 @@ ModificationDate -> ModificationDate
             Assert.That(target.Properties, Contains.Key("Description").WithValue("Description Description2"));
         }
 
-        [Test]
-        public void Map_TwoTupleValuesMultipleAndFunctionAddGroupDescription_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_TwoTupleValuesMultipleAndFunctionAddGroupDescription_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
             var mapper = new Mapper(functionProvider, new StringReader(CASE4));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject()
             {
                 Items = new List<DescriptionObject>
@@ -211,14 +216,15 @@ ModificationDate -> ModificationDate
         private const string CASE5 = @"(Items.Description, ""Text litteral"") -> AddGroupDescription(""Description"")
 ";
 
-        [Test]
-        public void Map_TwoTupleValuesWithTextLiteralAndFunctionAddGroupDescription_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_TwoTupleValuesWithTextLiteralAndFunctionAddGroupDescription_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
             var mapper = new Mapper(functionProvider, new StringReader(CASE5));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject()
             {
                 Items = new List<DescriptionObject>
@@ -237,14 +243,15 @@ ModificationDate -> ModificationDate
         private const string CASE6 = @"(""const1"", ""const2"") -> AddGroupDescription(""Description"")
 ";
 
-        [Test]
-        public void Map_TwoTupleValuesLiteralAndFunctionAddGroupDescription_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_TwoTupleValuesLiteralAndFunctionAddGroupDescription_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
             var mapper = new Mapper(functionProvider, new StringReader(CASE6));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject();
             var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
             handler.Map(origin, target);
@@ -255,14 +262,15 @@ ModificationDate -> ModificationDate
         private const string CASE7 = @"(""const1"", ""const2"") -> AddGroupDescription(""Description"", (""Item1"", ""Item2""))
 ";
 
-        [Test]
-        public void Map_TupleValuesLiteralAndFunctionAddGroupDescriptionWithTupleParameter_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_TupleValuesLiteralAndFunctionAddGroupDescriptionWithTupleParameter_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
             var mapper = new Mapper(functionProvider, new StringReader(CASE7));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject();
             var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
             handler.Map(origin, target);
@@ -273,14 +281,15 @@ ModificationDate -> ModificationDate
         private const string CASE8 = @"(constName1: ""const1"", constName1: ""const2"") -> AddGroupDescription(""Description"")
 ";
 
-        [Test]
-        public void Map_TupleNamedValuesLiteralAndFunctionAddGroupDescription_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_TupleNamedValuesLiteralAndFunctionAddGroupDescription_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IInsertFunctionHandler<TargetObject>, AddGroupDescription>("AddGroupDescription");
             var mapper = new Mapper(functionProvider, new StringReader(CASE8));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject();
             var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
             handler.Map(origin, target);
@@ -306,14 +315,15 @@ GetRef(""test"").Description2 -> Description.Description2
             }
         }
 
-        [Test]
-        public void Map_FunctionDereferencement_Success()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_FunctionDereferencement_Success(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<OriginObject>, GetRef>(nameof(GetRef));
             var mapper = new Mapper(functionProvider, new StringReader(CASE9));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject();
             var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
             handler.Map(origin, target);
@@ -336,14 +346,15 @@ GetRef(""test"").Description2 -> Description.Description2
             }
         }
 
-        [Test]
-        public void Map_FunctionDereferencement_FailedWithException()
+        [TestCase(CompileOption.v1)]
+        [TestCase(CompileOption.v2)]
+        public void Map_FunctionDereferencement_FailedWithException(CompileOption option)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<OriginObject>, GetRef2>(nameof(GetRef));
             var mapper = new Mapper(functionProvider, new StringReader(CASE9));
             mapper.Load();
-            var handler = mapper.GetMapper<OriginObject, TargetObject>();
+            var handler = mapper.GetMapper<OriginObject, TargetObject>(option);
             var origin = new OriginObject();
             var target = new TargetObject() { Description = new DescriptionObject(), Properties = new Dictionary<string, string>() };
 

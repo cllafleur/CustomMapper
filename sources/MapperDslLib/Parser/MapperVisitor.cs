@@ -68,7 +68,21 @@
 
         public override object VisitInstanceRef([NotNull] MapperParser.InstanceRefContext context)
         {
-            return new InstanceRefMapper(context.GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
+            var fieldsRef = new List<FieldInstanceRefMapper>();
+            foreach (var field in context.children)
+            {
+                var part = this.Visit(field);
+                if (part is FieldInstanceRefMapper fieldInstanceRefMapper)
+                {
+                    fieldsRef.Add(fieldInstanceRefMapper);
+                }
+            }
+            return new InstanceRefMapper(fieldsRef, new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
+        public override object VisitFieldInstanceRef([NotNull] MapperParser.FieldInstanceRefContext context)
+        {
+            return new FieldInstanceRefMapper(context.GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
         }
 
         public override object VisitReturnFunctionDereferencement([NotNull] MapperParser.ReturnFunctionDereferencementContext context)

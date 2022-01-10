@@ -1,18 +1,23 @@
-﻿namespace MapperDslLib.Parser
+﻿using System.Text;
+
+namespace MapperDslLib.Parser
 {
     public class InstanceRefMapper : IExpressionMapper, INamedExpressionMapper
     {
 
-        public InstanceRefMapper(string value, ParsingInfo infos)
+        public InstanceRefMapper(IEnumerable<FieldInstanceRefMapper> children, ParsingInfo infos)
         {
-            Value = value;
             ParsingInfo = infos;
+            Children = children;
         }
 
-        public string Value { get; private set; }
+        public string GetLitteral()
+        {
+            return string.Join(".", Children.Select(c => c.Value));
+        }
 
         public ParsingInfo ParsingInfo { get; }
-
+        public IEnumerable<FieldInstanceRefMapper> Children { get; }
         public string ExpressionName { get; set; }
     }
 }

@@ -95,17 +95,5 @@ namespace MapperDslLib.Tests.Runtime
             Assert.That(result.Count(), Is.EqualTo(2));
             Assert.That(result, Is.EqualTo(new[] { "value1", "value2" }));
         }
-
-        [Test]
-        public void InstanceVisitorGetInstance_RetrievePropertiesFromDictionary()
-        {
-            var obj = new Test2() { Dic = { { "key1", "val1" } } };
-
-            IInstanceVisitor<Test2> visitor = new InstanceVisitor<Test2>("Dic.key1", DefaultPropertyResolverHandler.Instance);
-            var result = visitor.GetInstance(obj);
-
-            Assert.That(result.Count(), Is.EqualTo(1));
-            Assert.That(result, Is.EqualTo(new[] { "val1" }));
-        }
     }
 }
