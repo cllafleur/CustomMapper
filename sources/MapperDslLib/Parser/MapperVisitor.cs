@@ -66,6 +66,30 @@
             return this.Visit(context.GetChild(0));
         }
 
+        public override object VisitInsertFieldRef([NotNull] MapperParser.InsertFieldRefContext context)
+        {
+            var instanceRefToken = context.insertInstanceRef();
+
+            var instanceRef = instanceRefToken != null ? (InstanceRefMapper)this.Visit(instanceRefToken) : null;
+            var setFieldRef = (FieldInstanceRefMapper)this.Visit(context.fieldInstanceRef());
+
+            return new InsertInstanceRefMapper(instanceRef, setFieldRef, new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
+        public override object VisitInsertInstanceRef([NotNull] MapperParser.InsertInstanceRefContext context)
+        {
+            var fieldsRef = new List<FieldInstanceRefMapper>();
+            foreach (var field in context.children)
+            {
+                var part = this.Visit(field);
+                if (part is FieldInstanceRefMapper fieldInstanceRefMapper)
+                {
+                    fieldsRef.Add(fieldInstanceRefMapper);
+                }
+            }
+            return new InstanceRefMapper(fieldsRef, new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
         public override object VisitInstanceRef([NotNull] MapperParser.InstanceRefContext context)
         {
             var fieldsRef = new List<FieldInstanceRefMapper>();

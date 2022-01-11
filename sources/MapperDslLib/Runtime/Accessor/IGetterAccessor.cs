@@ -9,6 +9,5 @@ namespace MapperDslLib.Runtime.Accessor
     {
         IEnumerable<object> GetInstance(object obj);
         PropertyInfo GetPropertyInfo();
-        void AddNext(IGetterAccessor getter);
     }
 }

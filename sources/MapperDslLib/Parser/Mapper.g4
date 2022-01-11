@@ -13,7 +13,15 @@ extractExpr
 	;
 
 insertExpr
-	: instanceRef | function
+	: insertFieldRef | function
+	;
+
+insertFieldRef
+	: (insertInstanceRef '.' )? fieldInstanceRef
+	;
+
+insertInstanceRef
+	: fieldInstanceRef (DOT fieldInstanceRef)*
 	;
 
 expr

@@ -146,9 +146,11 @@ namespace MapperDslLib
         {
             switch (expression)
             {
-                case InstanceRefMapper instanceRef:
-                    var instanceVisitor = BuildInstanceVisitor<T>(instanceRef, targetPropertyHandler);
-                    return new SetRuntimeHandler<T>(instanceVisitor, instanceRef.ParsingInfo);
+                case InsertInstanceRefMapper insertInstanceRef:
+                    var instanceVisitor2 = option == CompileOption.v2
+                        ? InstanceVisitorBuilder.GetSetterAccessor<T>(insertInstanceRef.InstanceRef?.Children, insertInstanceRef.SetFieldRef, targetPropertyHandler)
+                        : new InstanceVisitor<T>(insertInstanceRef.GetLitteral(), targetPropertyHandler);
+                    return new SetRuntimeHandler<T>(instanceVisitor2, insertInstanceRef.ParsingInfo);
                 case FunctionMapper function:
                     return BuildFunctionSetRuntimeHandler<T>(function);
             }

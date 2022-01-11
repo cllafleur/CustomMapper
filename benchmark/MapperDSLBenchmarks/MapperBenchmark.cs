@@ -109,7 +109,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             }
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void BuildEachTimeV1()
         {
             for (int i = 0; i < IterationNumber; i++)
@@ -118,7 +118,7 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             }
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void BuildEachTimeV2()
         {
             for (int i = 0; i < IterationNumber; i++)

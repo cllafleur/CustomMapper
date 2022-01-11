@@ -7,12 +7,12 @@ namespace MapperDslLib.Runtime
 {
     internal class SetRuntimeHandler<T> : ISetRuntimeHandler<T>
     {
-        private IInstanceVisitor<T> instanceVisitor;
+        private ISetterAccessor accessor;
         private ParsingInfo parsingInfos;
 
-        public SetRuntimeHandler(IInstanceVisitor<T> instanceVisitor, Parser.ParsingInfo parsingInfo)
+        public SetRuntimeHandler(ISetterAccessor instanceVisitor, Parser.ParsingInfo parsingInfo)
         {
-            this.instanceVisitor = instanceVisitor;
+            this.accessor = instanceVisitor;
             this.parsingInfos = parsingInfo;
         }
 
@@ -20,7 +20,7 @@ namespace MapperDslLib.Runtime
         {
             try
             {
-                instanceVisitor.SetInstance(obj, value.Result);
+                accessor.SetInstance(obj, value.Result);
             }
             catch (Exception exc) when (exc is not MapperRuntimeException)
             {
