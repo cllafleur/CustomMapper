@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>10</LangVersion>
     <Authors>cllafleur</Authors>
-    <VersionPrefix>0.9.10</VersionPrefix>
+    <VersionPrefix>0.9.11</VersionPrefix>
     <PackageId>$(Authors).$(AssemblyName)</PackageId>
     <PackageProjectUrl>https://github.com/cllafleur/MapperDSL</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cllafleur/MapperDSL</RepositoryUrl>
