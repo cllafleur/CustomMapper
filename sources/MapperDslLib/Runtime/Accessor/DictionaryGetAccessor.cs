@@ -20,11 +20,31 @@ class DictionaryGetAccessor : IGetAccessor
         }
         if (Next != null)
         {
-            return Next.GetInstance(((IDictionary)obj)[key]);
+            switch (obj)
+            {
+                case IDictionary dic:
+                    return Next.GetInstance(dic[key]);
+                case IDictionary<string, object> gdic:
+                    return Next.GetInstance(gdic[key]);
+                case IDictionary<object, object> gdic2:
+                    return Next.GetInstance(gdic2[key]);
+                default:
+                    throw new NotSupportedException($"Unsupported dictionary type {obj.GetType()}");
+            }
         }
         else
         {
-            return new[] { ((IDictionary)obj)[key] };
+            switch (obj)
+            {
+                case IDictionary dic:
+                    return new[] { dic[key] };
+                case IDictionary<string, object> gdic:
+                    return new[] { gdic[key] };
+                case IDictionary<object, object> gdic2:
+                    return new[] { gdic2[key] };
+                default:
+                    throw new NotSupportedException($"Unsupported dictionary type {obj.GetType()}");
+            }
         }
     }
 }

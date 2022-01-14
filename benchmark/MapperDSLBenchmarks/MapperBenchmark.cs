@@ -28,7 +28,9 @@ GenerateId(Reference) -> Reference
 Reference -> AddProperty(""OfferReference"")
 JobDescription.JobTitle -> JobAdDetails.Title
 JobDescription.Description1 -> JobAdDetails.MissionDescription
+JobDescription.Description1HTML -> JobAdDetails.MissionDescription
 JobDescription.Description2 -> JobAdDetails.ProfileDescription
+JobDescription.Description2HTML -> JobAdDetails.ProfileDescription
 Organisation -> AddProperty(""Organisation"")
 JobDescription.Country -> AddProperty(""Country"")
 JobDescription.JobDescriptionCustomFields.CustomCodeTable1.Label -> Location.Address
@@ -37,6 +39,11 @@ JobDescription.JobDescriptionCustomFields.CustomCodeTable1.Label -> Location.Add
 JobDescription.ContractType -> AddProperty(""ContractType"")
 Criteria.CriteriaCustomFields.LongText1 -> AddProperty(""InternalInformations"") # c'est un commentaire !
 ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
+
+JobDescription.JobDescriptionCustomFields.CustomCodeTable1 -> AddProperty(""customLocation"")
+JobDescription.JobDescriptionCustomFields.CustomCodeTable2 -> AddProperty(""customCoeff"")
+JobDescription.JobDescriptionCustomFields.LongText3 -> AddProperty(""Text3"")
+JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
 ";
         private void DoStaticMap(VacancyDetailRead origin, JobAd target)
         {
@@ -53,6 +60,11 @@ ExtractRef(CreationDate) -> AddProperty(""CreationDate"")
             target.Properties.Add("ContractType", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Id = origin.JobDescription.ContractType.Id, Label = origin.JobDescription.ContractType.Label } } });
             target.Properties.Add("InternalInformations", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Label = origin.Criteria.CriteriaCustomFields.LongText1 } } });
             target.Properties.Add("CreationDate", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Label = origin.CreationDate.ToString() } } });
+
+            target.Properties.Add("customLocation", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Id = origin.JobDescription.JobDescriptionCustomFields.CustomCodeTable1.Id, Label = origin.JobDescription.JobDescriptionCustomFields.CustomCodeTable1.Label } } });
+            target.Properties.Add("customCoeff", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Id = origin.JobDescription.JobDescriptionCustomFields.CustomCodeTable2.Id, Label = origin.JobDescription.JobDescriptionCustomFields.CustomCodeTable2.Label } } });
+            target.Properties.Add("Text3", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Label = origin.JobDescription.JobDescriptionCustomFields.LongText3 } } });
+            target.Properties.Add("sText1", new SingleProperty { Items = new List<SinglePropertyItem> { new SinglePropertyItem { Label = origin.JobDescription.JobDescriptionCustomFields.ShortText1 } } });
         }
 
         private VacancyDetailRead origin;

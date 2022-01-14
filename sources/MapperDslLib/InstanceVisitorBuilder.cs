@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Globalization;
-using System.Reflection;
 using MapperDslLib.Parser;
 using MapperDslLib.Runtime;
 using MapperDslLib.Runtime.Accessor;
@@ -18,6 +16,7 @@ namespace MapperDslLib
         private static readonly (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[] getterAccessorSetBuilders = new (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[]
         {
             (CheckIsDictionary, BuildDictionaryGetAccessor),
+            (CheckMustIterate, BuildEnumeratorGetAccessor),
         };
 
         public static IGetterAccessor GetGetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver)
@@ -35,81 +34,78 @@ namespace MapperDslLib
             Type startType,
             IEnumerable<FieldInstanceRefMapper> children,
             IPropertyResolverHandler propertyResolver,
-            (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[] builders)
+            (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[] builders,
+            bool stopBeforeLast = false)
         {
             Type currentType = startType;
             var accessors = new List<IGetAccessor>();
             IGetAccessor firstAccessor = null;
             IGetAccessor getter = null;
+            int count = 0;
+            bool dropFirstAccessorWhenStopBeforeLast = true;
 
             foreach (var field in children)
             {
+                count++;
                 bool goNext = false;
                 do
                 {
                     var previousAccessor = getter;
+                    var previousType = currentType;
                     (getter, currentType, goNext) = BuildGetAccessor(currentType, field, builders);
+                    firstAccessor ??= getter;
+                    if (stopBeforeLast && count == children.Count() && goNext)
+                    {
+                        currentType = previousType;
+                        firstAccessor = dropFirstAccessorWhenStopBeforeLast ? null : firstAccessor;
+                        break;
+                    }
                     if (previousAccessor != null)
                     {
                         previousAccessor.Next = getter;
                     }
-                    firstAccessor ??= getter;
+                    dropFirstAccessorWhenStopBeforeLast = false;
                 }
                 while (!goNext);
             }
             return (firstAccessor, currentType);
         }
 
-        public static ISetterAccessor GetSetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> children, FieldInstanceRefMapper fieldToSet, IPropertyResolverHandler propertyResolver)
+        public static ISetterAccessor GetSetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver)
         {
-            return GetSetterAccessor(typeof(T), children, fieldToSet, propertyResolver);
+            return GetSetterAccessor(typeof(T), fields, propertyResolver);
         }
 
-        public static ISetterAccessor GetSetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> children, FieldInstanceRefMapper fieldToSet, IPropertyResolverHandler propertyResolver)
+        public static ISetterAccessor GetSetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver)
         {
-            var (getAccessor, outputType) = children != null
-                ? GetGetAccessorImpl(startType, children, propertyResolver, getterAccessorSetBuilders)
-                : (null, startType);
-            return BuildFieldSetAccessor(outputType, getAccessor, fieldToSet);
-        }
-
-        class FieldSetterAccessor : ISetterAccessor
-        {
-            private IGetAccessor accessor;
-            private PropertyInfo prop;
-
-            public FieldSetterAccessor(IGetAccessor accessor, PropertyInfo prop)
+            var (getAccessor, outputType) = GetGetAccessorImpl(startType, fields, propertyResolver, getterAccessorSetBuilders, true);
+            var (isDic, _) = CheckIsDictionary(outputType);
+            if (isDic)
             {
-                this.accessor = accessor;
-                this.prop = prop;
+                return BuildDictionarySetAccessor(outputType, getAccessor, fields.Last());
             }
-
-            public void SetInstance(object obj, IEnumerable<object> value)
+            var (isList, _) = CheckMustIterate(outputType);
+            if (isList)
             {
-                var o = accessor != null ? accessor.GetInstance(obj).First() : obj;
-                var v = value.FirstOrDefault();
-                if (v is TupleValues values)
-                {
-                    v = values.FirstOrDefault();
-                }
-                object convertedValue = null;
-                Type innerType = Nullable.GetUnderlyingType(prop.PropertyType);
-                if (innerType != null && innerType == v.GetType())
-                {
-                    convertedValue = v;
-                }
-                else
-                {
-                    convertedValue = value == null ? null : Convert.ChangeType(v, prop.PropertyType, CultureInfo.InvariantCulture);
-                }
-                prop.SetValue(o, convertedValue);
+                return BuildEnumeratorSetAccessor(outputType, getAccessor, fields.Last());
             }
+            return BuildFieldSetAccessor(outputType, getAccessor, fields.Last());
         }
 
         private static ISetterAccessor BuildFieldSetAccessor(Type currentType, IGetAccessor accessor, FieldInstanceRefMapper field)
         {
             var prop = currentType.GetProperty(field.Value);
             return new FieldSetterAccessor(accessor, prop);
+        }
+
+        private static ISetterAccessor BuildDictionarySetAccessor(Type outputType, IGetAccessor getAccessor, FieldInstanceRefMapper fieldToSet)
+        {
+            return new DictionnarySetterAccessor(getAccessor, fieldToSet.Value);
+        }
+
+        private static ISetterAccessor BuildEnumeratorSetAccessor(Type outputType, IGetAccessor getAccessor, FieldInstanceRefMapper fieldToSet)
+        {
+            return new EnumeratorSetterAccessor(getAccessor);
         }
 
         private static (IGetAccessor getter, Type nextType, bool goNext) BuildGetAccessor(
@@ -148,7 +144,8 @@ namespace MapperDslLib
 
         private static (bool canGoNext, Type nextType) CheckIsDictionary(Type type)
         {
-            if (typeof(IDictionary).IsAssignableFrom(type))
+            if (typeof(IDictionary).IsAssignableFrom(type)
+                || type.GetInterfaces().Where(t => t.GUID == typeof(IDictionary<,>).GUID).Any())
             {
                 if (type.IsGenericType)
                 {
@@ -179,7 +176,8 @@ namespace MapperDslLib
 
         private static bool CheckCanGoNext(Type type)
         {
-            return type == typeof(string) || typeof(IDictionary).IsAssignableFrom(type) || !typeof(IEnumerable).IsAssignableFrom(type);
+            return type == typeof(string) || typeof(IDictionary).IsAssignableFrom(type)
+                || type.GetInterfaces().Where(t => t.GUID == typeof(IDictionary<,>).GUID).Any() || !typeof(IEnumerable).IsAssignableFrom(type);
         }
     }
 }

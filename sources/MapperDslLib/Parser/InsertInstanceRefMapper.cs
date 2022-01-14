@@ -14,6 +14,18 @@
             this.ParsingInfo = parsingInfo;
         }
 
+        public IEnumerable<FieldInstanceRefMapper> GetFieldInstanceRefs()
+        {
+            if (InstanceRef?.Children != null)
+            {
+                foreach (var child in InstanceRef.Children)
+                {
+                    yield return child;
+                }
+            }
+            yield return SetFieldRef;
+        }
+
         public string GetLitteral()
         {
             if (InstanceRef != null)

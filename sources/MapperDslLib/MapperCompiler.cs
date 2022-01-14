@@ -148,7 +148,7 @@ namespace MapperDslLib
             {
                 case InsertInstanceRefMapper insertInstanceRef:
                     var instanceVisitor2 = option == CompileOption.v2
-                        ? InstanceVisitorBuilder.GetSetterAccessor<T>(insertInstanceRef.InstanceRef?.Children, insertInstanceRef.SetFieldRef, targetPropertyHandler)
+                        ? InstanceVisitorBuilder.GetSetterAccessor<T>(insertInstanceRef.GetFieldInstanceRefs(), targetPropertyHandler)
                         : new InstanceVisitor<T>(insertInstanceRef.GetLitteral(), targetPropertyHandler);
                     return new SetRuntimeHandler<T>(instanceVisitor2, insertInstanceRef.ParsingInfo);
                 case FunctionMapper function:

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MapperDslLib.Tests.Runtime
 {
-    public class InstanceVisitorBuilderTests
+    public class GetInstanceVisitorBuilderTests
     {
         class Test1
         {
