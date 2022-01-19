@@ -24,13 +24,20 @@ class FieldSetterAccessor : ISetterAccessor
         }
         object convertedValue = null;
         Type innerType = Nullable.GetUnderlyingType(prop.PropertyType);
-        if (innerType != null && innerType == v.GetType())
+        if (innerType != null && (innerType == v.GetType() || innerType == typeof(string)))
         {
             convertedValue = v;
         }
         else
         {
-            convertedValue = value == null ? null : Convert.ChangeType(v, prop.PropertyType, CultureInfo.InvariantCulture);
+            if (prop.PropertyType == typeof(string))
+            {
+                convertedValue = v.ToString();
+            }
+            else
+            {
+                convertedValue = value == null ? null : Convert.ChangeType(v, prop.PropertyType, CultureInfo.InvariantCulture);
+            }
         }
         prop.SetValue(o, convertedValue);
     }

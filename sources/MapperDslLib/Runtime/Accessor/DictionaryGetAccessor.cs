@@ -29,7 +29,7 @@ class DictionaryGetAccessor : IGetAccessor
                 case IDictionary<object, object> gdic2:
                     return Next.GetInstance(gdic2[key]);
                 default:
-                    throw new NotSupportedException($"Unsupported dictionary type {obj.GetType()}");
+                    return Next.GetInstance(obj.GetType().GetProperties().Where(pi => pi.GetIndexParameters().Length > 0).First(p => p.GetIndexParameters()[0].ParameterType.GUID == typeof(string).GUID).GetGetMethod().Invoke(obj, new[] { key }));
             }
         }
         else
@@ -43,7 +43,7 @@ class DictionaryGetAccessor : IGetAccessor
                 case IDictionary<object, object> gdic2:
                     return new[] { gdic2[key] };
                 default:
-                    throw new NotSupportedException($"Unsupported dictionary type {obj.GetType()}");
+                    return new[] { obj.GetType().GetProperties().Where(pi => pi.GetIndexParameters().Length > 0).First(p => p.GetIndexParameters()[0].ParameterType.GUID == typeof(string).GUID).GetGetMethod().Invoke(obj, new[] { key }) };
             }
         }
     }

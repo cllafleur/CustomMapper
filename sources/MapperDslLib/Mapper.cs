@@ -24,7 +24,7 @@ namespace MapperDslLib
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize(this);
         }
 
         public (bool success, string[] errors) Load()
@@ -47,6 +47,7 @@ namespace MapperDslLib
             {
                 throw new ParsingDefinitionException($"Syntax errors, count : {parser.NumberOfSyntaxErrors}\n\n{string.Join("\n", syntaxErrorListener.GetErrors())}");
             }
+            _mappingDefinition.Dispose();
             return (parser.NumberOfSyntaxErrors == 0, syntaxErrorListener.GetErrors());
         }
 

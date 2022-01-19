@@ -7,16 +7,18 @@ namespace MapperDslLib
 {
     internal partial class InstanceVisitorBuilder
     {
-        private static readonly (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[] getterAccessorGetBuilders = new (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[]
+        private static readonly IGetAccessorFactoryHandler[] getterAccessorGetBuilders = new IGetAccessorFactoryHandler[]
         {
-            (CheckIsDictionary, BuildDictionaryGetAccessor),
-            (CheckMustIterate, BuildEnumeratorGetAccessor),
+            new DictionaryGetAccessorFactoryHandler(),
+            new EnumerableGetAccessorFactoryHandler(),
+            new FieldGetAccessorFactoryHandler(),
         };
 
-        private static readonly (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[] getterAccessorSetBuilders = new (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[]
+        private static readonly ISetAccessorFactoryHandler[] setterAccessorSetBuilders = new ISetAccessorFactoryHandler[]
         {
-            (CheckIsDictionary, BuildDictionaryGetAccessor),
-            (CheckMustIterate, BuildEnumeratorGetAccessor),
+            new DictionarySetAccessorFactoryHandler(),
+            new EnumerableSetAccessorFactoryHandler(),
+            new FieldSetAccessorFactoryHandler(),
         };
 
         public static IGetterAccessor GetGetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver)
@@ -26,49 +28,8 @@ namespace MapperDslLib
 
         public static IGetterAccessor GetGetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver)
         {
-            var (getter, _) = GetGetAccessorImpl(startType, children, propertyResolver, getterAccessorGetBuilders);
-            return new GetterAccessor(getter);
-        }
-
-        private static (IGetAccessor, Type) GetGetAccessorImpl(
-            Type startType,
-            IEnumerable<FieldInstanceRefMapper> children,
-            IPropertyResolverHandler propertyResolver,
-            (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[] builders,
-            bool stopBeforeLast = false)
-        {
-            Type currentType = startType;
-            var accessors = new List<IGetAccessor>();
-            IGetAccessor firstAccessor = null;
-            IGetAccessor getter = null;
-            int count = 0;
-            bool dropFirstAccessorWhenStopBeforeLast = true;
-
-            foreach (var field in children)
-            {
-                count++;
-                bool goNext = false;
-                do
-                {
-                    var previousAccessor = getter;
-                    var previousType = currentType;
-                    (getter, currentType, goNext) = BuildGetAccessor(currentType, field, builders);
-                    firstAccessor ??= getter;
-                    if (stopBeforeLast && count == children.Count() && goNext)
-                    {
-                        currentType = previousType;
-                        firstAccessor = dropFirstAccessorWhenStopBeforeLast ? null : firstAccessor;
-                        break;
-                    }
-                    if (previousAccessor != null)
-                    {
-                        previousAccessor.Next = getter;
-                    }
-                    dropFirstAccessorWhenStopBeforeLast = false;
-                }
-                while (!goNext);
-            }
-            return (firstAccessor, currentType);
+            var factory = new GetAccessorFactory(getterAccessorGetBuilders);
+            return factory.GetGetterAccessor(startType, children, propertyResolver);
         }
 
         public static ISetterAccessor GetSetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver)
@@ -78,106 +39,9 @@ namespace MapperDslLib
 
         public static ISetterAccessor GetSetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver)
         {
-            var (getAccessor, outputType) = GetGetAccessorImpl(startType, fields, propertyResolver, getterAccessorSetBuilders, true);
-            var (isDic, _) = CheckIsDictionary(outputType);
-            if (isDic)
-            {
-                return BuildDictionarySetAccessor(outputType, getAccessor, fields.Last());
-            }
-            var (isList, _) = CheckMustIterate(outputType);
-            if (isList)
-            {
-                return BuildEnumeratorSetAccessor(outputType, getAccessor, fields.Last());
-            }
-            return BuildFieldSetAccessor(outputType, getAccessor, fields.Last());
-        }
-
-        private static ISetterAccessor BuildFieldSetAccessor(Type currentType, IGetAccessor accessor, FieldInstanceRefMapper field)
-        {
-            var prop = currentType.GetProperty(field.Value);
-            return new FieldSetterAccessor(accessor, prop);
-        }
-
-        private static ISetterAccessor BuildDictionarySetAccessor(Type outputType, IGetAccessor getAccessor, FieldInstanceRefMapper fieldToSet)
-        {
-            return new DictionnarySetterAccessor(getAccessor, fieldToSet.Value);
-        }
-
-        private static ISetterAccessor BuildEnumeratorSetAccessor(Type outputType, IGetAccessor getAccessor, FieldInstanceRefMapper fieldToSet)
-        {
-            return new EnumeratorSetterAccessor(getAccessor);
-        }
-
-        private static (IGetAccessor getter, Type nextType, bool goNext) BuildGetAccessor(
-            Type currentType,
-            FieldInstanceRefMapper field,
-            (Func<Type, (bool, Type)>, Func<FieldInstanceRefMapper, Type, (IGetAccessor, Type, bool)>)[] builders)
-        {
-
-            foreach (var i in builders)
-            {
-                var (isTargetedType, nextType) = i.Item1(currentType);
-                if (isTargetedType)
-                {
-                    return i.Item2(field, nextType);
-                }
-            }
-
-            return BuildFieldGetAccessor(currentType, field);
-        }
-
-        private static (IGetAccessor getter, Type nextType, bool goNext) BuildFieldGetAccessor(Type currentType, FieldInstanceRefMapper field)
-        {
-            var prop = currentType.GetProperty(field.Value);
-            return (new FieldGetAccessor(prop), prop.PropertyType, CheckCanGoNext(prop.PropertyType));
-        }
-
-        private static (IGetAccessor getter, Type nextType, bool goNext) BuildEnumeratorGetAccessor(FieldInstanceRefMapper field, Type nextType)
-        {
-            return (new EnumeratorGetAccessor(), nextType, CheckCanGoNext(nextType));
-        }
-
-        private static (IGetAccessor getter, Type nextType, bool goNext) BuildDictionaryGetAccessor(FieldInstanceRefMapper field, Type nextTypeDic)
-        {
-            return (new DictionaryGetAccessor(field.Value), nextTypeDic, CheckCanGoNext(nextTypeDic));
-        }
-
-        private static (bool canGoNext, Type nextType) CheckIsDictionary(Type type)
-        {
-            if (typeof(IDictionary).IsAssignableFrom(type)
-                || type.GetInterfaces().Where(t => t.GUID == typeof(IDictionary<,>).GUID).Any())
-            {
-                if (type.IsGenericType)
-                {
-                    return (true, type.GenericTypeArguments[1]);
-                }
-                return (true, typeof(object));
-            }
-            return (false, null);
-        }
-
-        private static (bool canGoNext, Type nextType) CheckMustIterate(Type type)
-        {
-            if (typeof(IEnumerable).IsAssignableFrom(type))
-            {
-                Type nextType = null;
-                if (type.IsGenericType)
-                {
-                    nextType = type.GenericTypeArguments[0];
-                }
-                else if (type.IsArray)
-                {
-                    nextType = type.GetElementType();
-                }
-                return (true, nextType);
-            }
-            return (false, null);
-        }
-
-        private static bool CheckCanGoNext(Type type)
-        {
-            return type == typeof(string) || typeof(IDictionary).IsAssignableFrom(type)
-                || type.GetInterfaces().Where(t => t.GUID == typeof(IDictionary<,>).GUID).Any() || !typeof(IEnumerable).IsAssignableFrom(type);
+            var getFactory = new GetAccessorFactory(getterAccessorGetBuilders);
+            var setFactory = new SetAccessorFactory(getFactory, setterAccessorSetBuilders);
+            return setFactory.GetSetterAccessor(startType, fields, propertyResolver);
         }
     }
 }

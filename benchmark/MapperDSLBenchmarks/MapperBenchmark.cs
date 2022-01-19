@@ -77,7 +77,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
         [Params(100/*, 1000, 10000*/)]
         public long IterationNumber { get; set; } = 100000000;
 
-        [Benchmark]
+       // [Benchmark]
         public void BuildOnceV1()
         {
             var functionProvider = new FunctionHandlerProvider();
@@ -112,6 +112,24 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
         }
 
         [Benchmark]
+        public void ParseOnceCompileEachTimeV2()
+        {
+            var functionProvider = new FunctionHandlerProvider();
+            functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
+            functionProvider.Register<IInsertFunctionHandler<JobAd>, AddProperty>("AddProperty");
+            functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
+            var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
+            var (success, errors) = mapper.Load();
+            for (int i = 0; i < IterationNumber; i++)
+            {
+                var target = ModelBuilder.GetNewJobAd();
+                var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(CompileOption.v2);
+                mapperHandler.Map(origin, target);
+                mapperHandler = null;
+            }
+        }
+
+        [Benchmark]
         public void StaticMap()
         {
             for (int i = 0; i < IterationNumber; i++)
@@ -130,7 +148,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
             }
         }
 
-        //[Benchmark]
+        [Benchmark]
         public void BuildEachTimeV2()
         {
             for (int i = 0; i < IterationNumber; i++)
@@ -156,7 +174,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
             functionProvider.Register<IInsertFunctionHandler<JobAd>, AddProperty>("AddProperty");
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
-            var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
+            using var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
             var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(option);
             var target = ModelBuilder.GetNewJobAd();
