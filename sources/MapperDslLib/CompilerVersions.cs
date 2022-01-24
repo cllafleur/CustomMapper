@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MapperDslLib
 {
-    public enum CompileOption
+    public enum CompilerVersions
     {
         v1,
         v2,

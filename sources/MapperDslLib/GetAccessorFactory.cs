@@ -11,16 +11,18 @@ namespace MapperDslLib;
 internal class GetAccessorFactory
 {
     private readonly IGetAccessorFactoryHandler[] getterAccessorGetBuilders;
+    private readonly IGetAccessor deconstructorAccessor;
 
-    public GetAccessorFactory(IGetAccessorFactoryHandler[] getterAccessorGetBuilders)
+    public GetAccessorFactory(IGetAccessorFactoryHandler[] getterAccessorGetBuilders, IGetAccessor deconstructorAccessor)
     {
         this.getterAccessorGetBuilders = getterAccessorGetBuilders;
+        this.deconstructorAccessor = deconstructorAccessor;
     }
 
     public IGetterAccessor GetGetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver)
     {
         var (getter, _) = GetGetAccessorImpl(startType, children, propertyResolver, getterAccessorGetBuilders);
-        return new GetterAccessor(getter);
+        return new GetterAccessor(getter, deconstructorAccessor);
     }
 
     public (IGetAccessor, Type) GetGetAccessor(

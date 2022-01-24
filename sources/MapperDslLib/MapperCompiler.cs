@@ -10,22 +10,22 @@ namespace MapperDslLib
     public class MapperCompiler<TOrigin, TTarget>
     {
         private IFunctionHandlerProvider _functionHandlerProvider;
-        private readonly CompileOption option;
+        private readonly CompilerOptions options;
         private readonly IPropertyResolverHandler sourcePropertyHandler;
         private readonly IPropertyResolverHandler targetPropertyHandler;
 
-        public MapperCompiler(IFunctionHandlerProvider functionHandlerProvider, CompileOption option)
-            : this(functionHandlerProvider, option, null, null)
+        public MapperCompiler(IFunctionHandlerProvider functionHandlerProvider, CompilerOptions options)
+            : this(functionHandlerProvider, options, null, null)
         {
         }
 
         public MapperCompiler(IFunctionHandlerProvider functionHandlerProvider,
-             CompileOption option,
+             CompilerOptions options,
              IPropertyResolverHandler sourcePropertyHandler = null,
              IPropertyResolverHandler targetPropertyHandler = null)
         {
             _functionHandlerProvider = functionHandlerProvider;
-            this.option = option;
+            this.options = options;
             this.sourcePropertyHandler = sourcePropertyHandler ?? DefaultPropertyResolverHandler.Instance;
             this.targetPropertyHandler = targetPropertyHandler ?? DefaultPropertyResolverHandler.Instance;
         }
@@ -54,7 +54,7 @@ namespace MapperDslLib
             {
                 case InstanceRefMapper instanceRef:
                     IGetterAccessor instanceVisitor;
-                    if (option == CompileOption.v2)
+                    if (options.Version == CompilerVersions.v2)
                     {
                         instanceVisitor = BuildGetInstanceVisitor<T>(instanceRef, sourcePropertyHandler);
                     }
@@ -81,9 +81,9 @@ namespace MapperDslLib
             IGetRuntimeHandler<T> function = BuildGetRuntimeHandler<T>(returnFunction.Function);
             IGetterAccessor instanceVisitor;
             var outputType = _functionHandlerProvider.GetOutputType(returnFunction.Function.Identifier);
-            if (option == CompileOption.v2)
+            if (options.Version == CompilerVersions.v2)
             {
-                instanceVisitor = InstanceVisitorBuilder.GetGetterAccessor(outputType, returnFunction.Value.Children, sourcePropertyHandler);
+                instanceVisitor = InstanceVisitorBuilder.GetGetterAccessor(outputType, returnFunction.Value.Children, sourcePropertyHandler, options);
             }
             else
             {
@@ -122,7 +122,7 @@ namespace MapperDslLib
         {
             try
             {
-                return InstanceVisitorBuilder.GetGetterAccessor<T>(instanceRef.Children, propertyResolver);
+                return InstanceVisitorBuilder.GetGetterAccessor<T>(instanceRef.Children, propertyResolver, options);
             }
             catch (Exception exc)
             {
@@ -147,8 +147,8 @@ namespace MapperDslLib
             switch (expression)
             {
                 case InsertInstanceRefMapper insertInstanceRef:
-                    var instanceVisitor2 = option == CompileOption.v2
-                        ? InstanceVisitorBuilder.GetSetterAccessor<T>(insertInstanceRef.GetFieldInstanceRefs(), targetPropertyHandler)
+                    var instanceVisitor2 = options.Version == CompilerVersions.v2
+                        ? InstanceVisitorBuilder.GetSetterAccessor<T>(insertInstanceRef.GetFieldInstanceRefs(), targetPropertyHandler, options)
                         : new InstanceVisitor<T>(insertInstanceRef.GetLitteral(), targetPropertyHandler);
                     return new SetRuntimeHandler<T>(instanceVisitor2, insertInstanceRef.ParsingInfo);
                 case FunctionMapper function:

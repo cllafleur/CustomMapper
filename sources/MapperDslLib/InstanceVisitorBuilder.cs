@@ -21,26 +21,26 @@ namespace MapperDslLib
             new FieldSetAccessorFactoryHandler(),
         };
 
-        public static IGetterAccessor GetGetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver)
+        public static IGetterAccessor GetGetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver, CompilerOptions options = null)
         {
-            return GetGetterAccessor(typeof(T), children, propertyResolver);
+            return GetGetterAccessor(typeof(T), children, propertyResolver, options);
         }
 
-        public static IGetterAccessor GetGetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver)
+        public static IGetterAccessor GetGetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> children, IPropertyResolverHandler propertyResolver, CompilerOptions options = null)
         {
-            var factory = new GetAccessorFactory(getterAccessorGetBuilders);
+            var factory = new GetAccessorFactory(options?.ExtractGetAccessorFactoryHandlers ?? getterAccessorGetBuilders, options?.DeconstructorAccessor);
             return factory.GetGetterAccessor(startType, children, propertyResolver);
         }
 
-        public static ISetterAccessor GetSetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver)
+        public static ISetterAccessor GetSetterAccessor<T>(IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver, CompilerOptions options = null)
         {
-            return GetSetterAccessor(typeof(T), fields, propertyResolver);
+            return GetSetterAccessor(typeof(T), fields, propertyResolver, options);
         }
 
-        public static ISetterAccessor GetSetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver)
+        public static ISetterAccessor GetSetterAccessor(Type startType, IEnumerable<FieldInstanceRefMapper> fields, IPropertyResolverHandler propertyResolver, CompilerOptions options = null)
         {
-            var getFactory = new GetAccessorFactory(getterAccessorGetBuilders);
-            var setFactory = new SetAccessorFactory(getFactory, setterAccessorSetBuilders);
+            var getFactory = new GetAccessorFactory(options?.InsertGetAccessorFactoryHandlers ?? getterAccessorGetBuilders, null);
+            var setFactory = new SetAccessorFactory(getFactory, options?.InsertSetAccessorFactoryHandlers ?? setterAccessorSetBuilders);
             return setFactory.GetSetterAccessor(startType, fields, propertyResolver);
         }
     }

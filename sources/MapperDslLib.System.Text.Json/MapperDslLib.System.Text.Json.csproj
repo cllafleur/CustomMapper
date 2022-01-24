@@ -3,11 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>MapperDslLib</RootNamespace>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Runtime\" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="6.0.1" />

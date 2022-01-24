@@ -86,7 +86,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
             var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
-            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(CompileOption.v1);
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(new CompilerOptions() { Version = CompilerVersions.v1 });
             for (int i = 0; i < IterationNumber; i++)
             {
                 var target = ModelBuilder.GetNewJobAd();
@@ -103,7 +103,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
             var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
-            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(CompileOption.v2);
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(new CompilerOptions() { Version = CompilerVersions.v2 });
             for (int i = 0; i < IterationNumber; i++)
             {
                 var target = ModelBuilder.GetNewJobAd();
@@ -123,7 +123,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
             for (int i = 0; i < IterationNumber; i++)
             {
                 var target = ModelBuilder.GetNewJobAd();
-                var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(CompileOption.v2);
+                var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(new CompilerOptions() { Version = CompilerVersions.v2 });
                 mapperHandler.Map(origin, target);
                 mapperHandler = null;
             }
@@ -144,7 +144,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
         {
             for (int i = 0; i < IterationNumber; i++)
             {
-                BlockToTest(CompileOption.v1);
+                BlockToTest(new CompilerOptions() { Version = CompilerVersions.v1 });
             }
         }
 
@@ -153,7 +153,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
         {
             for (int i = 0; i < IterationNumber; i++)
             {
-                BlockToTest(CompileOption.v2);
+                BlockToTest(new CompilerOptions() { Version = CompilerVersions.v2 });
             }
         }
 
@@ -163,12 +163,12 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
             Settings.EnableReflectionCaching = true;
             for (int i = 0; i < IterationNumber; i++)
             {
-                BlockToTest(CompileOption.v1);
+                BlockToTest(new CompilerOptions() { Version = CompilerVersions.v1 });
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void BlockToTest(CompileOption option)
+        private void BlockToTest(CompilerOptions options)
         {
             var functionProvider = new FunctionHandlerProvider();
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, ExtractRef>("ExtractRef");
@@ -176,7 +176,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
             functionProvider.Register<IExtractFunctionHandler<VacancyDetailRead>, GenerateId>("GenerateId");
             using var mapper = new Mapper(functionProvider, new StringReader(DEFAULT_DEFINITION));
             var (success, errors) = mapper.Load();
-            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(option);
+            var mapperHandler = mapper.GetMapper<VacancyDetailRead, JobAd>(options);
             var target = ModelBuilder.GetNewJobAd();
             mapperHandler.Map(origin, target);
         }
@@ -186,7 +186,7 @@ JobDescription.JobDescriptionCustomFields.ShortText1 -> AddProperty(""sText1"")
         {
             Parallel.For(0L, IterationNumber, new ParallelOptions() { MaxDegreeOfParallelism = 20 }, (i) =>
              {
-                 BlockToTest(CompileOption.v1);
+                 BlockToTest(new CompilerOptions() { Version = CompilerVersions.v1 });
              });
         }
     }
