@@ -187,4 +187,58 @@ array2.text -> valueArray2
         Assert.AreEqual(originObj["array"][0].ToString(), target["valueArray"].ToString());
         Assert.AreEqual(originObj["array2"][0]["text"].ToString(), target["valueArray2"].ToString());
     }
+
+    [Test]
+    public void Map_OriginAsJsonobjectTargetAsJsonobjectType_SetFromArrayToArrayField_Success()
+    {
+        var json = @"{
+            ""array"": [ 1, 2 ],
+            ""array2"": [
+                { ""text"": ""textvalue"" },
+                { ""text"": ""textvalue2"" }
+            ]
+}";
+        var mappingDef = @"
+array -> valueArray*
+array2.text -> valueArray2*
+";
+
+        var originObj = JsonNode.Parse(json);
+        var target = new JsonObject();
+
+        var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(mappingDef));
+        mapper.Load();
+        var handler = mapper.GetMapperJsonToJson();
+
+        handler.Map(originObj, target);
+
+        Assert.AreEqual(originObj["array"].AsArray(), target["valueArray"].AsArray());
+        Assert.AreEqual(originObj["array2"].AsArray().Select(i => i["text"]).ToList(), target["valueArray2"].AsArray().ToList());
+    }
+
+    [Test]
+    public void Map_OriginAsJsonobjectTargetAsJsonobjectType_SetFromArrayToUnamedArrayField_Success()
+    {
+        var json = @"{
+            ""array"": [ 1, 2 ],
+            ""array2"": [
+                { ""text"": ""textvalue"" },
+                { ""text"": ""textvalue2"" }
+            ]
+}";
+        var mappingDef = @"
+array -> *
+";
+
+        var originObj = JsonNode.Parse(json);
+        var target = new JsonObject();
+
+        var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(mappingDef));
+        mapper.Load();
+        var handler = mapper.GetMapperJsonToJson();
+
+        handler.Map(originObj, target);
+
+        Assert.AreEqual(originObj["array"].AsArray(), target.AsArray());
+    }
 }

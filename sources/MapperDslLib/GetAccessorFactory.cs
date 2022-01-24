@@ -84,10 +84,11 @@ internal class GetAccessorFactory
 
         foreach (var i in builders)
         {
-            var (isTargetedType, nextType) = i.DoesHandle(currentType);
+            var fieldInfos = new FieldInfos { OutputType = currentType, Identifier = field.Value };
+            var (isTargetedType, nextType) = i.DoesHandle(fieldInfos);
             if (isTargetedType)
             {
-                return i.Create(field.Value, nextType);
+                return i.Create(fieldInfos, nextType);
             }
         }
 

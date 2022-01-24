@@ -6,12 +6,12 @@ namespace MapperDslLib.Runtime.Accessor;
 
 internal class ObjectSetAccessorFactoryHandler : ISetAccessorFactoryHandler
 {
-    public ISetterAccessor Create(Type outputType, IGetAccessor getAccessor, string identifier)
+    public ISetterAccessor Create(Type outputType, IGetAccessor getAccessor, FieldInfos infos)
     {
-        return new ObjectSetAccessor(getAccessor, identifier);
+        return new ObjectSetAccessor(getAccessor, infos.Identifier);
     }
 
-    public (bool isTargetedType, Type nextType) DoesHandle(Type type)
+    public (bool isTargetedType, Type nextType) DoesHandle(FieldInfos fieldInfos)
     {
         return (true, null);
     }

@@ -7,13 +7,14 @@ namespace MapperDslLib.Runtime.Accessor;
 
 internal class DictionarySetAccessorFactoryHandler : ISetAccessorFactoryHandler
 {
-    public ISetterAccessor Create(Type outputType, IGetAccessor getAccessor, string identifier)
+    public ISetterAccessor Create(Type outputType, IGetAccessor getAccessor, FieldInfos infos)
     {
-        return new DictionnarySetterAccessor(getAccessor, identifier);
+        return new DictionnarySetterAccessor(getAccessor, infos.Identifier);
     }
 
-    public (bool isTargetedType, Type nextType) DoesHandle(Type type)
+    public (bool isTargetedType, Type nextType) DoesHandle(FieldInfos fieldInfos)
     {
+        var type = fieldInfos.OutputType;
         if (typeof(IDictionary).IsAssignableFrom(type)
                   || type.GetInterfaces().Where(t => t.GUID == typeof(IDictionary<,>).GUID).Any())
         {

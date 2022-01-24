@@ -7,13 +7,14 @@ namespace MapperDslLib.Runtime.Accessor;
 
 internal class EnumerableGetAccessorFactoryHandler : IGetAccessorFactoryHandler
 {
-    public (IGetAccessor getter, Type nextType) Create(string identifier, Type nextType)
+    public (IGetAccessor getter, Type nextType) Create(FieldInfos fieldInfos, Type nextType)
     {
         return (new EnumeratorGetAccessor(), nextType);
     }
 
-    public (bool isTargetedType, Type nextType) DoesHandle(Type type)
+    public (bool isTargetedType, Type nextType) DoesHandle(FieldInfos fieldInfos)
     {
+        var type = fieldInfos.OutputType;
         if (typeof(IEnumerable).IsAssignableFrom(type))
         {
             Type nextType = null;

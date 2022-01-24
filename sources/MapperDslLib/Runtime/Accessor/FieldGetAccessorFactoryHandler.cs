@@ -6,15 +6,15 @@ namespace MapperDslLib.Runtime.Accessor
 {
     internal class FieldGetAccessorFactoryHandler : IGetAccessorFactoryHandler
     {
-        public (IGetAccessor getter, Type nextType) Create(string identifier, Type currentType)
+        public (IGetAccessor getter, Type nextType) Create(FieldInfos fieldInfos, Type currentType)
         {
-            var prop = currentType.GetProperty(identifier);
+            var prop = currentType.GetProperty(fieldInfos.Identifier);
             return (new FieldGetAccessor(prop), prop.PropertyType);
         }
 
-        public (bool isTargetedType, Type nextType) DoesHandle(Type type)
+        public (bool isTargetedType, Type nextType) DoesHandle(FieldInfos fieldInfos)
         {
-            return (true, type);
+            return (true, fieldInfos.OutputType);
         }
     }
 }

@@ -17,11 +17,19 @@ insertExpr
 	;
 
 insertFieldRef
-	: (insertInstanceRef '.' )? fieldInstanceRef
+	: insertFieldRefStartUnamed | insertFieldRefStartNamed
+	;
+
+insertFieldRefStartUnamed
+	: startingUnamedArrayFieldInstanceRef ( ('.' insertInstanceRef)? '.' fieldOrArrayInstanceRef )?
+	;
+
+insertFieldRefStartNamed
+	: (insertInstanceRef '.' )? fieldOrArrayInstanceRef
 	;
 
 insertInstanceRef
-	: fieldInstanceRef (DOT fieldInstanceRef)*
+	: fieldOrArrayInstanceRef (DOT fieldOrArrayInstanceRef)*
 	;
 
 expr
@@ -50,6 +58,18 @@ returnFunctionDereferencement
 
 instanceRef
 	: fieldInstanceRef (DOT fieldInstanceRef)*
+	;
+
+startingUnamedArrayFieldInstanceRef
+	: '*'
+	;
+
+fieldOrArrayInstanceRef
+	: fieldInstanceRef | arrayFieldInstanceRef
+	;
+
+arrayFieldInstanceRef
+	: fieldInstanceRef '*'
 	;
 
 fieldInstanceRef

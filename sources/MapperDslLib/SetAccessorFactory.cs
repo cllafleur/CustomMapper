@@ -23,10 +23,12 @@ internal class SetAccessorFactory
         var (getAccessor, outputType) = getFactory.GetGetAccessor(startType, fields, propertyResolver, true);
         foreach (var handler in setterAccessorSetBuilders)
         {
-            var (isTarget, _) = handler.DoesHandle(outputType);
+            var lastField = fields.Last();
+            var fieldInfos = new FieldInfos { Identifier = lastField.Value, IsArray = lastField is ArrayFieldInstanceRefMapper, OutputType = outputType };
+            var (isTarget, _) = handler.DoesHandle(fieldInfos);
             if (isTarget)
             {
-                return handler.Create(outputType, getAccessor, fields.Last().Value);
+                return handler.Create(outputType, getAccessor, fieldInfos);
             }
         }
         throw new NotSupportedException($"{outputType}");

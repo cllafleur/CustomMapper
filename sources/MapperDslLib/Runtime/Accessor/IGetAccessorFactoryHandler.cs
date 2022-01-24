@@ -2,6 +2,6 @@
 
 public interface IGetAccessorFactoryHandler
 {
-    (bool isTargetedType, Type nextType) DoesHandle(Type type);
-    (IGetAccessor getter, Type nextType) Create(string identifier, Type nextType);
+    (bool isTargetedType, Type nextType) DoesHandle(FieldInfos fieldInfos);
+    (IGetAccessor getter, Type nextType) Create(FieldInfos fieldInfos, Type nextType);
 }

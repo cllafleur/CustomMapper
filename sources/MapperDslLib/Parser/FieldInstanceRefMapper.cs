@@ -1,16 +1,15 @@
-﻿namespace MapperDslLib.Parser
+﻿namespace MapperDslLib.Parser;
+
+public class FieldInstanceRefMapper : IExpressionMapper
 {
-    public class FieldInstanceRefMapper : IExpressionMapper
+
+    public FieldInstanceRefMapper(string value, ParsingInfo infos)
     {
-
-        public FieldInstanceRefMapper(string value, ParsingInfo infos)
-        {
-            Value = value;
-            ParsingInfo = infos;
-        }
-
-        public string Value { get; private set; }
-
-        public ParsingInfo ParsingInfo { get; }
+        Value = value;
+        ParsingInfo = infos;
     }
+
+    public string Value { get; private set; }
+
+    public ParsingInfo ParsingInfo { get; }
 }
