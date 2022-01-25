@@ -19,10 +19,41 @@ internal class ObjectSetAccessor : ISetterAccessor
 
     public void SetInstance(object obj, IEnumerable<object> value)
     {
-        var o = getAccessor != null ? getAccessor.GetInstance(obj).First() : obj;
-        var v = value.FirstOrDefault();
-        var jo = ((JsonNode)o).AsObject();
-        switch (v)
+        var eo = getAccessor != null ? getAccessor.GetInstance(obj) : new[] { obj };
+        var enumerator = eo.GetEnumerator();
+        foreach (var v in value)
+        {
+            if (!enumerator.MoveNext())
+            {
+                break;
+            }
+            var o = enumerator.Current;
+
+            switch (o)
+            {
+                case JsonObject jo:
+                    SetObject(v, jo);
+                    break;
+                case JsonArray ja:
+                    foreach (var va in value)
+                    {
+                        SetArray(va, ja);
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void SetArray(object value, JsonArray ja)
+    {
+        var jo = SetObject(value, null);
+        ja.Add(jo);
+    }
+
+    private JsonObject SetObject(object value, JsonObject jo)
+    {
+        jo ??= new JsonObject();
+        switch (value)
         {
             case string str:
                 jo.Add(identifier, JsonValue.Create(str));
@@ -49,8 +80,9 @@ internal class ObjectSetAccessor : ISetterAccessor
                 jo.Add(identifier, JsonValue.Create(b));
                 break;
             default:
-                jo.Add(identifier, JsonValue.Create(v));
+                jo.Add(identifier, JsonValue.Create(value));
                 break;
         }
+        return jo;
     }
 }

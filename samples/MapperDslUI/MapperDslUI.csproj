@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\sources\MapperDslLib.System.Text.Json\MapperDslLib.System.Text.Json.csproj" />
     <ProjectReference Include="..\..\sources\MapperDslLib\MapperDslLib.csproj" />
   </ItemGroup>
 

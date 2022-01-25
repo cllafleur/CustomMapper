@@ -212,8 +212,8 @@ array2.text -> valueArray2*
 
         handler.Map(originObj, target);
 
-        Assert.AreEqual(originObj["array"].AsArray(), target["valueArray"].AsArray());
-        Assert.AreEqual(originObj["array2"].AsArray().Select(i => i["text"]).ToList(), target["valueArray2"].AsArray().ToList());
+        Assert.AreEqual(originObj["array"].AsArray().ToString(), target["valueArray"].AsArray().ToString());
+        Assert.AreEqual(originObj["array2"].AsArray().Select(i => i["text"].ToString()).ToList(), target["valueArray2"].AsArray().Select(i => i.ToString()).ToList());
     }
 
     [Test]
@@ -228,6 +228,35 @@ array2.text -> valueArray2*
 }";
         var mappingDef = @"
 array -> *
+array2.text -> *
+";
+
+        var originObj = JsonNode.Parse(json);
+        var target = new JsonArray();
+
+        var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(mappingDef));
+        mapper.Load();
+        var handler = mapper.GetMapperJsonToJson();
+
+        handler.Map(originObj, target);
+
+        Assert.AreEqual(
+            originObj["array"].AsArray().Concat(originObj["array2"].AsArray().Select(i => i["text"])).Select(i => i.ToString()),
+            target.AsArray().Select(i => i.ToString()));
+    }
+
+    [Test]
+    public void Map_OriginAsJsonobjectTargetAsJsonobjectType_SetIterativeOnMiddleArrayField_Success()
+    {
+        var json = @"{
+            ""array"": [ 1, 2 ],
+            ""array2"": [
+                { ""text"": ""textvalue"" },
+                { ""text"": ""textvalue2"" }
+            ]
+}";
+        var mappingDef = @"
+array -> o.middle*.value
 ";
 
         var originObj = JsonNode.Parse(json);
@@ -239,6 +268,101 @@ array -> *
 
         handler.Map(originObj, target);
 
-        Assert.AreEqual(originObj["array"].AsArray(), target.AsArray());
+        Assert.AreEqual(
+            originObj["array"].AsArray().Select(i => i.ToString()),
+            target["o"]["middle"].AsArray().Select(i => i["value"].ToString()));
     }
+
+    [Test]
+    public void Map_OriginAsJsonobjectTargetAsJsonobjectType_SetIterativeOnMiddleArrayPlus2LevelField_Success()
+    {
+        var json = @"{
+            ""array"": [ 1, 2 ],
+            ""array2"": [
+                { ""text"": ""textvalue"" },
+                { ""text"": ""textvalue2"" }
+            ]
+}";
+        var mappingDef = @"
+array -> o.middle*.int.value
+";
+
+        var originObj = JsonNode.Parse(json);
+        var target = new JsonObject();
+
+        var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(mappingDef));
+        mapper.Load();
+        var handler = mapper.GetMapperJsonToJson();
+
+        handler.Map(originObj, target);
+
+        Assert.AreEqual(
+            originObj["array"].AsArray().Select(i => i.ToString()),
+            target["o"]["middle"].AsArray().Select(i => i["int"]["value"].ToString()));
+    }
+
+    [Test]
+    public void Map_OriginAsJsonobjectTargetAsJsonobjectType_SetIterativeOnMiddleArrayPlus3LevelField_Success()
+    {
+        var json = @"{
+            ""array"": [ 1, 2 ],
+            ""array2"": [
+                { ""text"": ""textvalue"" },
+                { ""text"": ""textvalue2"" }
+            ]
+}";
+        var mappingDef = @"
+array -> o.middle*.int.i.value
+";
+
+        var originObj = JsonNode.Parse(json);
+        var target = new JsonObject();
+
+        var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(mappingDef));
+        mapper.Load();
+        var handler = mapper.GetMapperJsonToJson();
+
+        handler.Map(originObj, target);
+
+        Assert.AreEqual(
+            originObj["array"].AsArray().Select(i => i.ToString()),
+            target["o"]["middle"].AsArray().Select(i => i["int"]["i"]["value"].ToString()));
+    }
+
+    [Test]
+    public void Map_OriginAsJsonobjectTargetAsJsonobjectType_SetIterativeOnMiddleArrayMultipleArrayField_Success()
+    {
+        var json = @"{
+            ""array"": [ 1, 2 ],
+            ""array2"": [
+                { ""text"": ""textvalue"" },
+                { ""text"": ""textvalue2"" }
+            ]
+}";
+        var mappingDef = @"
+array -> o.middle*.int.value*
+";
+
+        var originObj = JsonNode.Parse(json);
+        var target = new JsonObject();
+
+        var mapper = new Mapper(new FunctionHandlerProvider(), new StringReader(mappingDef));
+        mapper.Load();
+        var handler = mapper.GetMapperJsonToJson();
+
+        handler.Map(originObj, target);
+
+        var result = new List<string>();
+        foreach (var e in target["o"]["middle"].AsArray())
+        {
+            foreach (var i in e["int"]["value"].AsArray())
+            {
+                result.Add(i.ToString());
+            }
+        }
+        Assert.AreEqual(
+            originObj["array"].AsArray().Select(i => i.ToString()),
+            result);
+    }
+
 }

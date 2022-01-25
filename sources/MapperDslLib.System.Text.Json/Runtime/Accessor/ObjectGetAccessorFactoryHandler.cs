@@ -7,7 +7,6 @@ namespace MapperDslLib.Runtime.Accessor;
 
 internal class ObjectGetAccessorFactoryHandler : IGetAccessorFactoryHandler
 {
-    private const string ArrayIdentifier = "*";
     private bool instanciatePath;
 
     public ObjectGetAccessorFactoryHandler(bool instanciatePath = false)
@@ -20,10 +19,6 @@ internal class ObjectGetAccessorFactoryHandler : IGetAccessorFactoryHandler
         var identifier = fieldInfos.Identifier;
         if (instanciatePath)
         {
-            if (identifier == ArrayIdentifier)
-            {
-                return (new ArrayInstanciateGetAccessor(), nextType);
-            }
             return (new ObjectInstanciateGetAccessor(identifier), nextType);
         }
         return (new ObjectGetAccessor(identifier), nextType);
@@ -31,6 +26,6 @@ internal class ObjectGetAccessorFactoryHandler : IGetAccessorFactoryHandler
 
     public (bool isTargetedType, Type nextType) DoesHandle(FieldInfos fieldInfos)
     {
-        return (typeof(JsonNode).IsAssignableFrom(fieldInfos.OutputType), typeof(JsonNode));
+        return (true, typeof(JsonNode));
     }
 }

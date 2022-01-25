@@ -49,7 +49,7 @@ namedExpr
 	;
 
 function
-	: IDENTIFIER WS? '(' WS? complexExpr ( WS? ',' WS? complexExpr )* WS? ')'
+	: IDENTIFIER WS? '(' WS? ( complexExpr ( WS? ',' WS? complexExpr )* WS? )? ')'
 	;
 
 returnFunctionDereferencement

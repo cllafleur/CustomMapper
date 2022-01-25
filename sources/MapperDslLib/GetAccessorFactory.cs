@@ -84,7 +84,7 @@ internal class GetAccessorFactory
 
         foreach (var i in builders)
         {
-            var fieldInfos = new FieldInfos { OutputType = currentType, Identifier = field.Value };
+            var fieldInfos = new FieldInfos { OutputType = currentType, Identifier = field.Value, IsArray = field is ArrayFieldInstanceRefMapper };
             var (isTargetedType, nextType) = i.DoesHandle(fieldInfos);
             if (isTargetedType)
             {

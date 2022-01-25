@@ -132,7 +132,7 @@
 
         public override object VisitArrayFieldInstanceRef([NotNull] MapperParser.ArrayFieldInstanceRefContext context)
         {
-            return new ArrayFieldInstanceRefMapper(context.GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
+            return new ArrayFieldInstanceRefMapper(context.fieldInstanceRef().GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
         }
 
         public override object VisitStartingUnamedArrayFieldInstanceRef([NotNull] MapperParser.StartingUnamedArrayFieldInstanceRefContext context)

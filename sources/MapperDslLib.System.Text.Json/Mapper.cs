@@ -14,10 +14,12 @@ public static class MapperExtensions
     };
 
     private static readonly IGetAccessorFactoryHandler[] insertGetAccessorFactoryHandlers = new IGetAccessorFactoryHandler[] {
+        new ArrayGetAccessorFactoryHandler(),
         new ObjectGetAccessorFactoryHandler(true),
     };
 
     private static readonly ISetAccessorFactoryHandler[] insertSetAccessorFactoryHandlers = new ISetAccessorFactoryHandler[] {
+        new ArraySetAccessorFactoryHandler(),
         new ObjectSetAccessorFactoryHandler(),
     };
 
@@ -28,6 +30,7 @@ public static class MapperExtensions
         var options = new CompilerOptions()
         {
             ExtractGetAccessorFactoryHandlers = extractGetAccessorFactoryHandlers,
+            DeconstructorAccessor = deconstructorAccessor,
         };
 
         return mapper.GetMapper<JsonNode, T>(options);
