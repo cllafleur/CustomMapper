@@ -1,5 +1,6 @@
 # MapperDSL
 
+[![NuGet](https://img.shields.io/nuget/v/cllafleur.MapperDslLib.svg)](https://nuget.org/packages/cllafleur.MapperDslLib)
 [![Build](https://github.com/cllafleur/MapperDSL/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/cllafleur/MapperDSL/actions/workflows/dotnet.yml)
 
 ## Goals
