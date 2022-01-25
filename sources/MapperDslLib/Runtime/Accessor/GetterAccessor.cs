@@ -5,19 +5,33 @@ namespace MapperDslLib.Runtime.Accessor;
 class GetterAccessor : IGetterAccessor
 {
     private readonly IGetAccessor accessor;
+    private readonly IGetAccessor deconstructorAccessor;
 
-    public GetterAccessor(IGetAccessor accessor)
+    public GetterAccessor(IGetAccessor accessor, IGetAccessor deconstructorAccessor)
     {
         this.accessor = accessor;
+        this.deconstructorAccessor = deconstructorAccessor;
     }
 
     public IEnumerable<object> GetInstance(object obj)
     {
-        if (obj == null)
+        if (obj != null)
         {
-            return Enumerable.Empty<object>();
+            foreach (var o in accessor.GetInstance(obj))
+            {
+                if (deconstructorAccessor != null)
+                {
+                    foreach (var v in deconstructorAccessor.GetInstance(o))
+                    {
+                        yield return v;
+                    }
+                }
+                else
+                {
+                    yield return o;
+                }
+            }
         }
-        return accessor.GetInstance(obj);
     }
 
     public PropertyInfo GetPropertyInfo()

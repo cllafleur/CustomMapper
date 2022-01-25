@@ -29,7 +29,7 @@ namespace MapperDslUI
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
-            this.DataContext = new MainWindowViewModel();
+            this.DataContext = new JsonMainWindowViewModel();
         }
 
         private void ConsoleOutput_TextChanged(object sender, TextChangedEventArgs e)

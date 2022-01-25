@@ -66,14 +66,35 @@
             return this.Visit(context.GetChild(0));
         }
 
-        public override object VisitInsertFieldRef([NotNull] MapperParser.InsertFieldRefContext context)
+        public override object VisitInsertFieldRefStartNamed([NotNull] MapperParser.InsertFieldRefStartNamedContext context)
         {
             var instanceRefToken = context.insertInstanceRef();
 
             var instanceRef = instanceRefToken != null ? (InstanceRefMapper)this.Visit(instanceRefToken) : null;
-            var setFieldRef = (FieldInstanceRefMapper)this.Visit(context.fieldInstanceRef());
+            var setFieldRef = (FieldInstanceRefMapper)this.Visit(context.fieldOrArrayInstanceRef());
 
             return new InsertInstanceRefMapper(instanceRef, setFieldRef, new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
+        public override object VisitInsertFieldRefStartUnamed([NotNull] MapperParser.InsertFieldRefStartUnamedContext context)
+        {
+            var rootArray = (FieldInstanceRefMapper)this.Visit(context.startingUnamedArrayFieldInstanceRef());
+            var instanceRefToken = context.insertInstanceRef();
+            var setFieldToken = context.insertInstanceRef();
+
+            var parsingInfos = new ParsingInfo(context.Start.Line, context.GetText());
+            if (setFieldToken == null)
+            {
+                return new InsertInstanceRefMapper(null, rootArray, parsingInfos);
+            }
+            var setField = (FieldInstanceRefMapper)this.Visit(setFieldToken);
+            if (instanceRefToken == null)
+            {
+                return new InsertInstanceRefMapper(new InstanceRefMapper(new[] { rootArray }, rootArray.ParsingInfo), setField, parsingInfos);
+            }
+            var instanceref = (InstanceRefMapper)this.Visit(instanceRefToken);
+            var newInstanceRef = new InstanceRefMapper(new[] { rootArray }.Concat(instanceref.Children), instanceref.ParsingInfo);
+            return new InsertInstanceRefMapper(newInstanceRef, setField, parsingInfos);
         }
 
         public override object VisitInsertInstanceRef([NotNull] MapperParser.InsertInstanceRefContext context)
@@ -107,6 +128,16 @@
         public override object VisitFieldInstanceRef([NotNull] MapperParser.FieldInstanceRefContext context)
         {
             return new FieldInstanceRefMapper(context.GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
+        public override object VisitArrayFieldInstanceRef([NotNull] MapperParser.ArrayFieldInstanceRefContext context)
+        {
+            return new ArrayFieldInstanceRefMapper(context.fieldInstanceRef().GetText(), new ParsingInfo(context.Start.Line, context.GetText()));
+        }
+
+        public override object VisitStartingUnamedArrayFieldInstanceRef([NotNull] MapperParser.StartingUnamedArrayFieldInstanceRefContext context)
+        {
+            return new ArrayFieldInstanceRefMapper(String.Empty, new ParsingInfo(context.Start.Line, context.GetText()));
         }
 
         public override object VisitReturnFunctionDereferencement([NotNull] MapperParser.ReturnFunctionDereferencementContext context)

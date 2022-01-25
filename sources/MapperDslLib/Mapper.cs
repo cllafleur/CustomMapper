@@ -24,7 +24,7 @@ namespace MapperDslLib
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize(this);
         }
 
         public (bool success, string[] errors) Load()
@@ -47,12 +47,14 @@ namespace MapperDslLib
             {
                 throw new ParsingDefinitionException($"Syntax errors, count : {parser.NumberOfSyntaxErrors}\n\n{string.Join("\n", syntaxErrorListener.GetErrors())}");
             }
+            _mappingDefinition.Dispose();
             return (parser.NumberOfSyntaxErrors == 0, syntaxErrorListener.GetErrors());
         }
 
-        public IMapperHandler<TOrigin, TTarget> GetMapper<TOrigin, TTarget>(CompileOption option = CompileOption.v2)
+        public IMapperHandler<TOrigin, TTarget> GetMapper<TOrigin, TTarget>(CompilerOptions options = null)
         {
-            var compiler = new MapperCompiler<TOrigin, TTarget>(_functionHandlerProvider, option);
+            options ??= new CompilerOptions();
+            var compiler = new MapperCompiler<TOrigin, TTarget>(_functionHandlerProvider, options);
             var handler = compiler.Compile(Actions);
             return handler;
         }

@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <Authors>cllafleur</Authors>
+    <VersionPrefix>0.9.12</VersionPrefix>
+    <PackageProjectUrl>https://github.com/cllafleur/MapperDSL</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/cllafleur/MapperDSL</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>

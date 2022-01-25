@@ -33,7 +33,10 @@ class DictionnarySetterAccessor : ISetterAccessor
                 gdic2[key] = v;
                 break;
             default:
-                throw new NotSupportedException($"Not supported dictionary type {o.GetType()}");
+                var pis = o.GetType().GetProperties().Where(pi => pi.GetIndexParameters().Length > 0);
+                pis.First(p => p.GetIndexParameters()[0].ParameterType.GUID == typeof(string).GUID).GetSetMethod().Invoke(o, new[] { key, v });
+                break;
+                //throw new NotSupportedException($"Not supported dictionary type {o.GetType()}");
         }
     }
 }
