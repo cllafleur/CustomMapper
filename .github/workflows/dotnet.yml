@@ -26,7 +26,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release MapperDSLNugetPack.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal MapperDSLNugetPack.sln
+      run: dotnet test --no-build --verbosity normal -c Release MapperDSLNugetPack.sln
     - name: Pack
       run: dotnet pack --no-restore -c Release -o output MapperDSLNugetPack.sln
     - name: Publish package
