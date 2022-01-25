@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>MapperDslLib</RootNamespace>
     <LangVersion>10</LangVersion>
+    <PackageId>$(Authors).$(AssemblyName)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
