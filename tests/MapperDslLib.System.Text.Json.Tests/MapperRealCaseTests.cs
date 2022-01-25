@@ -95,34 +95,34 @@ public class MapperRealCaseTests
         }
     }
 
-    [Test]
-    public void Map_OriginAsJsonobjectTargetAsItemType_SetWithTupleInsert_Success()
-    {
-        var json = @"{
-        ""name"": ""John"",
-        ""email"": ""jDoe@nd.xxx"",
-        ""civility"": ""Mr""
-}";
-        var mappingDef = @"
-name -> informations.name
-email -> informations.email
-civility -> informations.civility
-attachments() -> attachments*.(key: key, type: fileType, filename: description)
-";
+//    [Test]
+//    public void Map_OriginAsJsonobjectTargetAsItemType_SetWithTupleInsert_Success()
+//    {
+//        var json = @"{
+//        ""name"": ""John"",
+//        ""email"": ""jDoe@nd.xxx"",
+//        ""civility"": ""Mr""
+//}";
+//        var mappingDef = @"
+//name -> informations.name
+//email -> informations.email
+//civility -> informations.civility
+//attachments() -> attachments*.(key: key, type: fileType, filename: description)
+//";
 
-        var originObj = JsonNode.Parse(json);
-        var target = new JsonObject();
+//        var originObj = JsonNode.Parse(json);
+//        var target = new JsonObject();
 
-        var funcProvider = new FunctionHandlerProvider();
-        funcProvider.Register<JsonNode, AttachmentFunction>("attachments");
-        var mapper = new Mapper(funcProvider, new StringReader(mappingDef));
-        mapper.Load();
-        var handler = mapper.GetMapperJsonToJson();
+//        var funcProvider = new FunctionHandlerProvider();
+//        funcProvider.Register<JsonNode, AttachmentFunction>("attachments");
+//        var mapper = new Mapper(funcProvider, new StringReader(mappingDef));
+//        mapper.Load();
+//        var handler = mapper.GetMapperJsonToJson();
 
-        handler.Map(originObj, target);
+//        handler.Map(originObj, target);
 
-        Assert.That(target["informations"]["name"].GetValue<string>(), Is.EqualTo("John"));
-        Assert.That(target["informations"]["email"].GetValue<string>(), Is.EqualTo("jDoe@nd.xxx"));
-        Assert.That(target["informations"]["civility"].GetValue<string>(), Is.EqualTo("Mr"));
-    }
+//        Assert.That(target["informations"]["name"].GetValue<string>(), Is.EqualTo("John"));
+//        Assert.That(target["informations"]["email"].GetValue<string>(), Is.EqualTo("jDoe@nd.xxx"));
+//        Assert.That(target["informations"]["civility"].GetValue<string>(), Is.EqualTo("Mr"));
+//    }
 }
