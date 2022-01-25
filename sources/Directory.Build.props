@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Authors>cllafleur</Authors>
-    <VersionPrefix>0.9.12</VersionPrefix>
+    <VersionPrefix>0.9.13</VersionPrefix>
     <PackageProjectUrl>https://github.com/cllafleur/MapperDSL</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cllafleur/MapperDSL</RepositoryUrl>
   </PropertyGroup>
