@@ -1,6 +1,11 @@
 name: CI
 
 on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'sources/**'
+
   pull_request:
     branches: [ main ]
     paths:
